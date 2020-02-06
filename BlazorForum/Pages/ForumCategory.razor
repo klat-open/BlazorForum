@@ -1,0 +1,105 @@
+﻿@page "/forum/category/{id:int}/{slug}"
+@using System.Linq
+@using BlazorForum.Pages.Components
+@using Microsoft.AspNetCore.Identity
+@using BlazorForum.Domain.Interfaces
+
+@inject NavigationManager navManager
+@inject Domain.Interfaces.IManageForumCategories manageForumCategories
+@inject Domain.Interfaces.IManageForumTopics manageForumTopics
+@inject UserManager<IdentityUser> userManager
+@inject IJSRuntime JSRuntime
+
+@if (category == null)
+{
+    <div class="mb-2 loading-div">
+        <em><i class="oi oi-cog se-spin-icon"></i> Loading</em>
+    </div>
+}
+else
+{
+    <header class="forum-category-header">
+        <h3>@category.Title</h3>
+        <span class="forum-category-description">@category.Description</span>
+    </header>
+
+    if (topics == null || topics.Count == 0)
+    {
+        <p>No topics found.</p>
+    }
+    else
+    {
+        <ul class="forum-ul">
+            @foreach (var topic in topics)
+            {
+                <li>
+                    <a href="@String.Format("/forum/category/topic/{0}/{1}",
+                          topic.ForumTopicId, Domain.Utilities.Formatting.PrepareUrlText(topic.Title))">
+                        @topic.Title
+                    </a>
+                    <div class="topic-blazifier">
+                        Posted By: @*@userManager.FindByIdAsync(topic.UserId).Result.UserName*@
+                    </div>
+                </li>
+            }
+        </ul>
+        <div class="text-center">
+            <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMoreTopics">Load More</button>
+        </div>
+    }
+
+    <section class="mt-4 mb-3">
+        <h4>Create a New Topic</h4>
+        <AuthorizeView>
+            <Authorized>
+                <AddNewTopicForm OnTopicAdded="UpdateTopics"></AddNewTopicForm>
+            </Authorized>
+            <NotAuthorized>
+                <div class="alert alert-secondary">
+                    <span class="text-secondary">You must be logged in to post a new topic.</span>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </section>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    [Parameter] public string slug { get; set; }
+    private List<Models.ForumCategory> categories;
+    private Models.ForumCategory category;
+    private List<Models.ForumTopic> topics { get; set; }
+    private int maxCount = 10;
+    private string loadMoreVisibility;
+
+    protected override async Task OnInitializedAsync()
+    {
+        category = await manageForumCategories.GetForumCategoryAsync(id);
+        topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
+
+        if (maxCount > topics.Count)
+            loadMoreVisibility = "d-none";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("setDocTitle", category.Title);
+    }
+
+    public async void UpdateTopics()
+    {
+        topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
+        StateHasChanged();
+    }
+
+    public async Task LoadMoreTopics()
+    {
+        maxCount += 10;
+        topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
+
+        if (maxCount > topics.Count)
+            loadMoreVisibility = "d-none";
+
+        StateHasChanged();
+    }
+}

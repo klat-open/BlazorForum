@@ -1,0 +1,72 @@
+﻿@page "/forum/category/topic/{id:int}/{slug}"
+@using BlazorForum.Pages.Components
+
+@inject NavigationManager  navManager
+@inject Domain.Interfaces.IManageForumTopics manageForumTopics
+@inject Domain.Interfaces.IManageForumPosts  manageForumPosts
+@inject IJSRuntime JSRuntime
+
+@if (topic == null)
+{
+    <div class="mb-2 loading-div">
+        <em><i class="oi oi-cog se-spin-icon"></i> Loading</em>
+    </div>
+}
+else
+{
+    <header class="forum-topic-header">
+        <h3>@topic.Title</h3>
+    </header>
+    <div class="forum-topic-text-div">
+        @topic.TopicText
+    </div>
+
+    var posts = topic.ForumPosts;
+    if (posts != null && posts.Count > 0)
+    {
+        foreach (var post in posts)
+        {
+            <div class="forum-post-section">
+                @post.PostText
+                <div>@post.PostedDate</div>
+            </div>
+        }
+    }
+}
+
+<section class="mt-4 mb-3">
+    <h4>Post a Reply</h4>
+    <AuthorizeView>
+        <Authorized>
+            <AddNewPostForm OnPostAdded="UpdatePosts"></AddNewPostForm>
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-secondary">
+                <span class="text-secondary">You must be logged in to post a new topic.</span>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</section>
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    [Parameter] public string slug { get; set; }
+    private Models.ForumTopic topic;
+
+    protected override async Task OnInitializedAsync()
+    {
+        topic = await manageForumTopics.GetForumTopicAsync(id);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("setDocTitle", topic.Title);
+    }
+
+    public void UpdatePosts()
+    {
+        //posts = manageForumPosts.GetForumPostsLimitedAsync(Convert.ToInt32(id), maxCount).Result;
+        StateHasChanged();
+    }
+}

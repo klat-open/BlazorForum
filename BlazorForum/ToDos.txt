@@ -1,0 +1,9 @@
+﻿*Add UserId to new topics & topic replies
+
+*Change username to actual username instead of email
+
+*Maybe add spinner to load more
+
+*Posting a new topic two times in a row generates an Entity Db error
+
+*Issue with topic replies (posts) and a foreign key constraint "FK_ForumPosts_ForumTopics_ForumTopicId"

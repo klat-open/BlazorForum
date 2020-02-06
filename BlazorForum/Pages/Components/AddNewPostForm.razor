@@ -1,0 +1,44 @@
+﻿@inject Domain.Interfaces.IManageForumPosts manageForumPosts
+@inject NavigationManager navManager
+
+<EditForm Model="@_forumPost" OnValidSubmit="AddNewPost">
+    <DataAnnotationsValidator />
+    <ValidationSummary></ValidationSummary>
+    <InputTextArea id="TopicText" @bind-Value="_forumPost.PostText" rows="3" class="@textAreaClass" />
+    <ValidationMessage For="@(() => _forumPost.PostText)" />
+    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Add Post</button>
+    <div class="rounded bg-veryDarkBlue p-2 mt-2 text-light @submitVisibility"><i class="oi oi-cog se-spin-icon"></i> Posting</div>
+</EditForm>
+
+@code {
+    private Models.ForumPost _forumPost = new Models.ForumPost() { UserId = "test" };
+    private string btnVisibility = "d-block";
+    private string submitVisibility = "d-none";
+    [Parameter] public int id { get; set; }
+    private string textAreaClass { get; set; } = "mt-2 form-control";
+
+    [Parameter] public Action OnPostAdded { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task AddNewPost()
+    {
+        btnVisibility = "d-none";
+        submitVisibility = "d-inline-block";
+
+        _forumPost.PostedDate = DateTime.Now.ToUniversalTime();
+        _forumPost.ForumTopicId = id;
+        await manageForumPosts.AddNewPostAsync(_forumPost);
+
+        btnVisibility = "d-inline-block";
+        submitVisibility = "d-none";
+        _forumPost.PostText = string.Empty;
+
+        textAreaClass = "mt-2 form-control clear-validation";
+
+        OnPostAdded?.Invoke();
+    }
+}

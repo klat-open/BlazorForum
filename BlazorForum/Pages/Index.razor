@@ -1,0 +1,14 @@
+﻿@page "/"
+@inject IJSRuntime JSRuntime
+
+<h1>BlazorForum</h1>
+
+Welcome to BlazorForum! BlazorForum is an open source forum app built in Blazor. The code can be found on the GitHub repository at xxx.
+
+@code{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Plan to eventually pull this from database
+        await JSRuntime.InvokeVoidAsync("setDocTitle", "BlazorForum.Net");
+    }
+}

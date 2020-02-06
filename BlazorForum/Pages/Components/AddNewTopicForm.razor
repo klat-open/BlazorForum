@@ -1,0 +1,59 @@
+﻿@inject Domain.Interfaces.IManageForumTopics manageForumTopics
+@inject NavigationManager navManager
+
+<EditForm Model="@_forumTopic" OnValidSubmit="PostTopic">
+    <DataAnnotationsValidator />
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <label class="input-group-text">Title</label>
+        </div>
+        <InputText id="Title" @bind-Value="_forumTopic.Title" class="@titleClass" />
+    </div>
+    <ValidationMessage For="@(() => _forumTopic.Title)" />
+
+    <InputTextArea id="TopicText" @bind-Value="_forumTopic.TopicText" rows="3" class="@textAreaClass" />
+    <ValidationMessage For="@(() => _forumTopic.TopicText)" />
+    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Post Topic</button>
+    <div class="rounded bg-veryDarkBlue p-2 mt-2 text-light @submitVisibility"><i class="oi oi-cog se-spin-icon"></i> Posting</div>
+
+</EditForm>
+
+@code {
+    private Models.ForumTopic _forumTopic = new Models.ForumTopic() { UserId = "ttt" };
+    private string btnVisibility = "d-block";
+    private string submitVisibility = "d-none";
+    [Parameter] public int id { get; set; }
+    private string titleClass { get; set; } = "form-control";
+    private string textAreaClass { get; set; } = "mt-2 form-control";
+    [Parameter] public Action OnTopicAdded { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task PostTopic()
+    {
+        btnVisibility = "d-none";
+        submitVisibility = "d-inline-block";
+
+        _forumTopic.PostedDate = DateTime.Now.ToUniversalTime();
+        _forumTopic.ForumCategoryId = Convert.ToInt32(id);
+        _forumTopic.Flags = 0;
+        _forumTopic.IsModeratorChanged = false;
+        _forumTopic.IsDeleted = false;
+        _forumTopic.IsApproved = true;
+        await manageForumTopics.PostNewTopicAsync(_forumTopic);
+
+        btnVisibility = "d-inline-block";
+        submitVisibility = "d-none";
+        _forumTopic.Title = string.Empty;
+        _forumTopic.TopicText = string.Empty;
+
+        titleClass = "form-control clear-validation";
+        textAreaClass = "mt-2 form-control clear-validation";
+
+        OnTopicAdded?.Invoke();
+    }
+}
