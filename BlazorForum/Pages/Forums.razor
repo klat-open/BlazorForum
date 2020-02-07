@@ -27,7 +27,7 @@ else
                     <li class="forum-category-section">
                         <a href="@String.Format("/forum/category/{0}/{1}", 
                                   category.ForumCategoryId, 
-                                  Domain.Utilities.Formatting.PrepareUrlText(category.Title))">@category.Title</a>
+                                  Domain.Utilities.Formatting.UrlFormatting.PrepareUrlText(category.Title))">@category.Title</a>
                     </li>
                 }
             </ul>

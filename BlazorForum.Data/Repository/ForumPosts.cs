@@ -17,9 +17,14 @@ namespace BlazorForum.Data.Repository
             _context = context;
         }
 
-        public async Task<List<ForumPost>> GetTopicPosts(int topicId)
+        public async Task<List<ForumPost>> GetForumPosts(int topicId)
         {
             return _context.ForumPosts.Where(p => p.ForumTopicId == topicId).ToList();
+        }
+
+        public async Task<List<ForumPost>> GetForumPostsLimitedAsync(int topicId, int maxCount)
+        {
+            return _context.ForumPosts.Where(p => p.ForumTopicId == topicId).OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
         }
 
         public async Task<bool> AddNewPostAsync(ForumPost newPost)

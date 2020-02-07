@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace BlazorForum.Domain.Utilities
+namespace BlazorForum.Domain.Utilities.Formatting
 {
-    public class Formatting
+    public class UrlFormatting
     {
         private readonly IHttpContextAccessor _accessor;
 
-        public Formatting(IHttpContextAccessor accessor)
+        public UrlFormatting(IHttpContextAccessor accessor)
         {
             _accessor = accessor;
         }

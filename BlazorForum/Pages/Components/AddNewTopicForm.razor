@@ -1,5 +1,9 @@
-﻿@inject Domain.Interfaces.IManageForumTopics manageForumTopics
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject Domain.Interfaces.IManageForumTopics manageForumTopics
 @inject NavigationManager navManager
+@inject UserManager<IdentityUser> userManager
+@inject AuthenticationStateProvider authStateProvider
 
 <EditForm Model="@_forumTopic" OnValidSubmit="PostTopic">
     <DataAnnotationsValidator />
@@ -19,18 +23,18 @@
 </EditForm>
 
 @code {
-    private Models.ForumTopic _forumTopic = new Models.ForumTopic() { UserId = "ttt" };
+    private Models.ForumTopic _forumTopic = new Models.ForumTopic() { UserId = userId };
     private string btnVisibility = "d-block";
     private string submitVisibility = "d-none";
-    [Parameter] public int id { get; set; }
     private string titleClass { get; set; } = "form-control";
     private string textAreaClass { get; set; } = "mt-2 form-control";
+    private static string userId { get; set; }
     [Parameter] public Action OnTopicAdded { get; set; }
-
+    [Parameter] public int ForumId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-
+        userId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
     }
 
     private async Task PostTopic()
@@ -39,11 +43,12 @@
         submitVisibility = "d-inline-block";
 
         _forumTopic.PostedDate = DateTime.Now.ToUniversalTime();
-        _forumTopic.ForumCategoryId = Convert.ToInt32(id);
+        _forumTopic.ForumCategoryId = ForumId;
         _forumTopic.Flags = 0;
         _forumTopic.IsModeratorChanged = false;
         _forumTopic.IsDeleted = false;
         _forumTopic.IsApproved = true;
+
         await manageForumTopics.PostNewTopicAsync(_forumTopic);
 
         btnVisibility = "d-inline-block";

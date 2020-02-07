@@ -1,7 +1,8 @@
 ﻿@page "/forum/category/topic/{id:int}/{slug}"
 @using BlazorForum.Pages.Components
+@using BlazorForum.Domain.Utilities.Formatting
 
-@inject NavigationManager  navManager
+@inject NavigationManager navManager
 @inject Domain.Interfaces.IManageForumTopics manageForumTopics
 @inject Domain.Interfaces.IManageForumPosts  manageForumPosts
 @inject IJSRuntime JSRuntime
@@ -21,28 +22,35 @@ else
         @topic.TopicText
     </div>
 
-    var posts = topic.ForumPosts;
     if (posts != null && posts.Count > 0)
     {
-        foreach (var post in posts)
-        {
-            <div class="forum-post-section">
-                @post.PostText
-                <div>@post.PostedDate</div>
-            </div>
-        }
+        <ul class="forum-post-ul">
+            @foreach (var post in posts)
+            {
+                <li>
+                    @post.PostText
+                    <div class="forum-post-time">
+                        Posted @DateTimeFormatting.RelativeDateAgo(post.PostedDate)
+                    </div>
+                </li>
+            }
+        </ul>
     }
+
+    <div class="text-center">
+        <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMorePosts">Load More</button>
+    </div>
 }
 
 <section class="mt-4 mb-3">
     <h4>Post a Reply</h4>
     <AuthorizeView>
         <Authorized>
-            <AddNewPostForm OnPostAdded="UpdatePosts"></AddNewPostForm>
+            <AddNewPostForm OnPostAdded="UpdatePosts" TopicId="@id"></AddNewPostForm>
         </Authorized>
         <NotAuthorized>
             <div class="alert alert-secondary">
-                <span class="text-secondary">You must be logged in to post a new topic.</span>
+                <span class="text-secondary">You must be logged in to add a new post.</span>
             </div>
         </NotAuthorized>
     </AuthorizeView>
@@ -53,10 +61,17 @@ else
     [Parameter] public int id { get; set; }
     [Parameter] public string slug { get; set; }
     private Models.ForumTopic topic;
+    private List<Models.ForumPost> posts;
+    private int maxCount = 10;
+    private string loadMoreVisibility;
 
     protected override async Task OnInitializedAsync()
     {
         topic = await manageForumTopics.GetForumTopicAsync(id);
+        posts = await manageForumPosts.GetForumPostsLimitedAsync(id, maxCount);
+
+        if (maxCount > posts.Count)
+            loadMoreVisibility = "d-none";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -66,7 +81,18 @@ else
 
     public void UpdatePosts()
     {
-        //posts = manageForumPosts.GetForumPostsLimitedAsync(Convert.ToInt32(id), maxCount).Result;
+        posts = manageForumPosts.GetForumPostsLimitedAsync(id, maxCount).Result;
+        StateHasChanged();
+    }
+
+    public async Task LoadMorePosts()
+    {
+        maxCount += 10;
+        posts = await manageForumPosts.GetForumPostsLimitedAsync(id, maxCount);
+
+        if (maxCount > posts.Count)
+            loadMoreVisibility = "d-none";
+
         StateHasChanged();
     }
 }

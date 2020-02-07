@@ -1,8 +1,6 @@
 ﻿@page "/forum/category/{id:int}/{slug}"
-@using System.Linq
 @using BlazorForum.Pages.Components
 @using Microsoft.AspNetCore.Identity
-@using BlazorForum.Domain.Interfaces
 
 @inject NavigationManager navManager
 @inject Domain.Interfaces.IManageForumCategories manageForumCategories
@@ -34,11 +32,12 @@ else
             {
                 <li>
                     <a href="@String.Format("/forum/category/topic/{0}/{1}",
-                          topic.ForumTopicId, Domain.Utilities.Formatting.PrepareUrlText(topic.Title))">
+                          topic.ForumTopicId, Domain.Utilities.Formatting.UrlFormatting.PrepareUrlText(topic.Title))">
                         @topic.Title
                     </a>
                     <div class="topic-blazifier">
-                        Posted By: @*@userManager.FindByIdAsync(topic.UserId).Result.UserName*@
+                        @* // This seems to get caught in a loop if loaded more than once...*@
+                        Posted By: @*@userManager.FindByIdAsync(topic.UserId).Result.UserName*@ 
                     </div>
                 </li>
             }
@@ -52,7 +51,7 @@ else
         <h4>Create a New Topic</h4>
         <AuthorizeView>
             <Authorized>
-                <AddNewTopicForm OnTopicAdded="UpdateTopics"></AddNewTopicForm>
+                <AddNewTopicForm OnTopicAdded="UpdateTopics" ForumId="@id"></AddNewTopicForm>
             </Authorized>
             <NotAuthorized>
                 <div class="alert alert-secondary">
