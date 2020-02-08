@@ -99,6 +99,8 @@ else
 
         if (maxCount >= topics.Count)
             loadMoreVisibility = "d-none";
+        else
+            loadMoreVisibility = "d-inline-block";
 
         topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
 
@@ -113,9 +115,12 @@ else
 
         if (maxCount >= topics.Count)
             loadMoreVisibility = "d-none";
+        else
+            loadMoreVisibility = "d-inline-block";
 
         topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
 
+        await AddUserToTopic();
         StateHasChanged();
     }
 

@@ -73,11 +73,12 @@ else
     protected override async Task OnInitializedAsync()
     {
         topic = await manageForumTopics.GetForumTopicAsync(id);
-        posts = await manageForumPosts.GetForumPostsLimitedAsync(id, maxCount);
+        posts = await manageForumPosts.GetForumPostsAsync(id);
 
-        if (maxCount > posts.Count)
+        if (maxCount >= posts.Count)
             loadMoreVisibility = "d-none";
 
+        posts = posts.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
         CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
         await AddUserToPost();
     }
@@ -87,20 +88,34 @@ else
         await JSRuntime.InvokeVoidAsync("setDocTitle", topic.Title);
     }
 
-    public void UpdatePosts()
+    public async void UpdatePosts()
     {
-        posts = manageForumPosts.GetForumPostsLimitedAsync(id, maxCount).Result;
+        posts = await manageForumPosts.GetForumPostsAsync(id);
+
+        if (maxCount >= posts.Count)
+            loadMoreVisibility = "d-none";
+        else
+            loadMoreVisibility = "d-inline-block";
+
+        posts = posts.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        
+        await AddUserToPost();
         StateHasChanged();
     }
 
     public async Task LoadMorePosts()
     {
         maxCount += 10;
-        posts = await manageForumPosts.GetForumPostsLimitedAsync(id, maxCount);
+        posts = await manageForumPosts.GetForumPostsAsync(id);
 
-        if (maxCount > posts.Count)
+        if (maxCount >= posts.Count)
             loadMoreVisibility = "d-none";
+        else
+            loadMoreVisibility = "d-inline-block";
 
+        posts = posts.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+
+        await AddUserToPost();
         StateHasChanged();
     }
 

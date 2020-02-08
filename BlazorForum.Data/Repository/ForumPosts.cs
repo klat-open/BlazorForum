@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BlazorForum.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorForum.Data.Repository
 {
@@ -17,20 +17,15 @@ namespace BlazorForum.Data.Repository
             _context = context;
         }
 
-        public async Task<List<ForumPost>> GetForumPosts(int topicId)
+        public async Task<List<ForumPost>> GetForumPostsAsync(int topicId)
         {
-            return _context.ForumPosts.Where(p => p.ForumTopicId == topicId).ToList();
-        }
-
-        public async Task<List<ForumPost>> GetForumPostsLimitedAsync(int topicId, int maxCount)
-        {
-            return _context.ForumPosts.Where(p => p.ForumTopicId == topicId).OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+            return await _context.ForumPosts.Where(p => p.ForumTopicId == topicId).ToListAsync();
         }
 
         public async Task<bool> AddNewPostAsync(ForumPost newPost)
         {
             var posts = _context.ForumPosts;
-            posts.Add(newPost);
+            await posts.AddAsync(newPost);
             await _context.SaveChangesAsync();
             return true;
         }
