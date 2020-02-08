@@ -1,38 +1,32 @@
-﻿@using Microsoft.AspNetCore.Identity
-
-@inject Domain.Interfaces.IManageForumPosts manageForumPosts
+﻿@inject Domain.Interfaces.IManageForumPosts manageForumPosts
 @inject NavigationManager navManager
-@inject UserManager<IdentityUser> userManager
-@inject AuthenticationStateProvider authStateProvider
+
 
 <EditForm Model="@_forumPost" OnValidSubmit="AddNewPost">
     <DataAnnotationsValidator />
     <InputTextArea id="PostText" @bind-Value="_forumPost.PostText" rows="3" class="@textAreaClass" />
     <ValidationMessage For="@(() => _forumPost.PostText)" />
     <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Add Post</button>
-    <div class="rounded bg-veryDarkBlue p-2 mt-2 text-light @submitVisibility"><i class="oi oi-cog se-spin-icon"></i> Posting</div>
+    <div class="rounded bg-veryDarkBlue p-2 mt-2 text-light @submitVisibility">
+        <i class="oi oi-cog se-spin-icon"></i> Posting
+    </div>
 </EditForm>
 
 @code {
-    private Models.ForumPost _forumPost = new Models.ForumPost() { UserId = userId };
+    [Parameter] public string CurrentUserId { get; set; }
+    [Parameter] public Action OnPostAdded { get; set; }
+    [Parameter] public int TopicId { get; set; }
+    private Models.ForumPost _forumPost = new Models.ForumPost() { UserId = "placeholder" };
     private string btnVisibility = "d-block";
     private string submitVisibility = "d-none";
     private string textAreaClass { get; set; } = "mt-2 form-control";
-    private static string userId { get; set; }
-
-    [Parameter] public Action OnPostAdded { get; set; }
-    [Parameter] public int TopicId { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        userId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
-    }
 
     private async Task AddNewPost()
     {
         btnVisibility = "d-none";
         submitVisibility = "d-inline-block";
 
+        _forumPost.UserId = CurrentUserId;
         _forumPost.PostedDate = DateTime.Now.ToUniversalTime();
         _forumPost.ForumTopicId = TopicId;
         _forumPost.Flags = 0;

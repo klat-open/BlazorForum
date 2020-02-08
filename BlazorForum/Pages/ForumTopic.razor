@@ -1,10 +1,13 @@
 ﻿@page "/forum/category/topic/{id:int}/{slug}"
 @using BlazorForum.Pages.Components
 @using BlazorForum.Domain.Utilities.Formatting
+@using Microsoft.AspNetCore.Identity
 
 @inject NavigationManager navManager
 @inject Domain.Interfaces.IManageForumTopics manageForumTopics
 @inject Domain.Interfaces.IManageForumPosts  manageForumPosts
+@inject UserManager<IdentityUser> userManager
+@inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime JSRuntime
 
 @if (topic == null)
@@ -30,7 +33,8 @@ else
                 <li>
                     @post.PostText
                     <div class="forum-post-time">
-                        Posted @DateTimeFormatting.RelativeDateAgo(post.PostedDate)
+                        Posted @DateTimeFormatting.RelativeDateAgo(post.PostedDate) 
+                        by @post.UserName
                     </div>
                 </li>
             }
@@ -46,7 +50,7 @@ else
     <h4>Post a Reply</h4>
     <AuthorizeView>
         <Authorized>
-            <AddNewPostForm OnPostAdded="UpdatePosts" TopicId="@id"></AddNewPostForm>
+            <AddNewPostForm OnPostAdded="UpdatePosts" TopicId="@id" CurrentUserId="@CurrentUserId"></AddNewPostForm>
         </Authorized>
         <NotAuthorized>
             <div class="alert alert-secondary">
@@ -60,6 +64,7 @@ else
 @code {
     [Parameter] public int id { get; set; }
     [Parameter] public string slug { get; set; }
+    [Parameter] public string CurrentUserId { get; set; }
     private Models.ForumTopic topic;
     private List<Models.ForumPost> posts;
     private int maxCount = 10;
@@ -72,6 +77,9 @@ else
 
         if (maxCount > posts.Count)
             loadMoreVisibility = "d-none";
+
+        CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
+        await AddUserToPost();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -94,5 +102,14 @@ else
             loadMoreVisibility = "d-none";
 
         StateHasChanged();
+    }
+
+    private async Task AddUserToPost()
+    {
+        foreach (var post in posts)
+        {
+            var user = await userManager.FindByIdAsync(post.UserId);
+            post.UserName = user.UserName;
+        }
     }
 }

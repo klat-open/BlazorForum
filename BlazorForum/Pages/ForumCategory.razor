@@ -83,6 +83,7 @@ else
             loadMoreVisibility = "d-none";
 
         topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
         await AddUserToTopic();
     }
 
@@ -120,8 +121,6 @@ else
 
     private async Task AddUserToTopic()
     {
-       CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
-
         foreach (var topic in topics)
         {
             var user = await userManager.FindByIdAsync(topic.UserId);
