@@ -1,6 +1,7 @@
 ﻿@page "/forum/category/{id:int}/{slug}"
 @using BlazorForum.Pages.Components
 @using Microsoft.AspNetCore.Identity
+@using Domain.Utilities.Formatting;
 
 @inject NavigationManager navManager
 @inject Domain.Interfaces.IManageForumCategories manageForumCategories
@@ -32,12 +33,13 @@ else
             {
                 <li>
                     <a href="@String.Format("/forum/category/topic/{0}/{1}",
-                          topic.ForumTopicId, Domain.Utilities.Formatting.UrlFormatting.PrepareUrlText(topic.Title))">
+                          topic.ForumTopicId, UrlFormatting.PrepareUrlText(topic.Title))">
                         @topic.Title
                     </a>
                     <div class="topic-blazifier">
-                        @* // This seems to get caught in a loop if loaded more than once...*@
-                        Posted By: @*@userManager.FindByIdAsync(topic.UserId).Result.UserName*@ 
+                        Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
+                        @* // This seems to get caught in a loop...*@
+                        @*Posted By:*@ @*@userManager.FindByIdAsync(topic.UserId).Result.UserName*@
                     </div>
                 </li>
             }

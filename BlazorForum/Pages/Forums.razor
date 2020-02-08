@@ -24,7 +24,7 @@ else
             <ul class="forum-ul">
                 @foreach (var category in forum.ForumCategories)
                 {
-                    <li class="forum-category-section">
+                    <li>
                         <a href="@String.Format("/forum/category/{0}/{1}", 
                                   category.ForumCategoryId, 
                                   Domain.Utilities.Formatting.UrlFormatting.PrepareUrlText(category.Title))">@category.Title</a>

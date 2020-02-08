@@ -1,0 +1,57 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">BlazorForum.Net</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/admin/" Match="NavLinkMatch.All">
+                <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            @* // Manage forums/categories/topics from here *@
+            <NavLink class="nav-link" href="/admin/forums/">
+                <span class="oi oi-chat" aria-hidden="true"></span> Forums
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            @* // The idea is to add the ability to create pages for the site *@
+            <NavLink class="nav-link" href="/admin/pages/">
+                <span class="oi oi-document" area-hidden="true"></span> Pages
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            @* // Plan on adding membership/role administration here *@
+            <NavLink class="nav-link" href="/admin/membership/">
+                <span class="oi oi-people" area-hidden="true"></span> Membership
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            @* // Maybe build in the ability to insert modules/components from external sources? *@
+            <NavLink class="nav-link" href="/admin/modules/">
+                <span class="oi oi-task" area-hidden="true"></span> Modules
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            @* // Site Settings *@
+            <NavLink class="nav-link" href="/admin/settings/">
+                <span class="oi oi-cog" area-hidden="true"></span> Settings
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

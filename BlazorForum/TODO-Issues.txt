@@ -1,0 +1,16 @@
+﻿### KNOWN ISSUES ###
+* Posting a new topic two times in a row generates an Entity Db error
+
+* Unable to get username from their user id in a foreach loop without freezing (or infinite loop?)
+
+* Issues with admin theme flipping back and forth when pages refresh. The admin index page (Dashboard) doesn't do it.
+
+
+### TODO ###
+* It would be nice if this could be updated with the click of a button
+
+* Change user usernames to actual username instead of email
+
+* Maybe add spinner to load more
+
+* Move strings to resources file

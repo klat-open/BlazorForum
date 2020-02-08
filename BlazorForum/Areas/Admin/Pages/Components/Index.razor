@@ -1,0 +1,14 @@
+﻿@page "/admin/"
+@inject IJSRuntime JSRuntime
+
+<h1>Administration</h1>
+
+Welcome to your administration area.
+
+@code{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Plan to eventually pull this from database
+        await JSRuntime.InvokeVoidAsync("setDocTitle", "BlazorForum");
+    }
+}

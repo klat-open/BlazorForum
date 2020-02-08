@@ -1,7 +1,0 @@
-﻿*Change username to actual username instead of email
-
-*Maybe add spinner to load more
-
-*Posting a new topic two times in a row generates an Entity Db error
-
-*Move strings to resources file

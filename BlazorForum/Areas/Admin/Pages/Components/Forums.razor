@@ -1,0 +1,36 @@
+﻿@page "/admin/forums/"
+
+@using Domain.Interfaces;
+
+@inject IManageForums manageForums
+
+<h3>Forums</h3>
+
+@if(forums == null)
+{
+    <div>Loading Forums...</div>
+}
+else
+{
+    <ul class="forum-ul">
+        @foreach(var forum in forums)
+        {
+            <li>
+                @forum.Title
+            </li>
+        }
+    </ul>
+
+}
+
+@code {
+
+    private List<Models.Forum> forums;
+    private List<Models.ForumCategory> categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forums = await manageForums.GetForumsAsync();
+    }
+
+}
