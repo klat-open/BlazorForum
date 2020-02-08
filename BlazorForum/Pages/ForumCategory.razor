@@ -7,6 +7,7 @@
 @inject Domain.Interfaces.IManageForumCategories manageForumCategories
 @inject Domain.Interfaces.IManageForumTopics manageForumTopics
 @inject UserManager<IdentityUser> userManager
+@inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime JSRuntime
 
 @if (category == null)
@@ -52,7 +53,7 @@ else
         <h4>Create a New Topic</h4>
         <AuthorizeView>
             <Authorized>
-                <AddNewTopicForm OnTopicAdded="UpdateTopics" ForumId="@id"></AddNewTopicForm>
+                <AddNewTopicForm OnTopicAdded="UpdateTopics" ForumId="@id" CurrentUserId="@CurrentUserId"></AddNewTopicForm>
             </Authorized>
             <NotAuthorized>
                 <div class="alert alert-secondary">
@@ -66,6 +67,7 @@ else
 @code {
     [Parameter] public int id { get; set; }
     [Parameter] public string slug { get; set; }
+    [Parameter] public string CurrentUserId { get; set; }
     private List<Models.ForumCategory> categories;
     private Models.ForumCategory category;
     private List<Models.ForumTopic> topics { get; set; }
@@ -76,12 +78,7 @@ else
     {
         category = await manageForumCategories.GetForumCategoryAsync(id);
         topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
-
-        foreach(var topic in topics)
-        {
-            var user = await userManager.FindByIdAsync(topic.UserId);
-            topic.UserName = user.UserName;
-        }
+        await AddUserToTopic();
 
         if (maxCount > topics.Count)
             loadMoreVisibility = "d-none";
@@ -94,7 +91,9 @@ else
 
     public async void UpdateTopics()
     {
+        // ISSUE: Not seeing title after post. Also can't post two times in a row without db error
         topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
+        await AddUserToTopic();
         StateHasChanged();
     }
 
@@ -107,5 +106,16 @@ else
             loadMoreVisibility = "d-none";
 
         StateHasChanged();
+    }
+
+    private async Task AddUserToTopic()
+    {
+       CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
+
+        foreach (var topic in topics)
+        {
+            var user = await userManager.FindByIdAsync(topic.UserId);
+            topic.UserName = user.UserName;
+        }
     }
 }
