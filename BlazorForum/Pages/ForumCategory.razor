@@ -39,7 +39,7 @@ else
                     </a>
                     <div class="topic-blazifier">
                         Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
-                        | Posted By: @topic.UserName
+                        by @topic.UserName
                     </div>
                 </li>
             }
@@ -77,11 +77,13 @@ else
     protected override async Task OnInitializedAsync()
     {
         category = await manageForumCategories.GetForumCategoryAsync(id);
-        topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
-        await AddUserToTopic();
+        topics = await manageForumTopics.GetForumTopicsAsync(id);
 
-        if (maxCount > topics.Count)
+        if (maxCount >= topics.Count)
             loadMoreVisibility = "d-none";
+
+        topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        await AddUserToTopic();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -92,7 +94,13 @@ else
     public async void UpdateTopics()
     {
         // ISSUE: Not seeing title after post. Also can't post two times in a row without db error
-        topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
+        topics = await manageForumTopics.GetForumTopicsAsync(id);
+
+        if (maxCount >= topics.Count)
+            loadMoreVisibility = "d-none";
+
+        topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+
         await AddUserToTopic();
         StateHasChanged();
     }
@@ -100,10 +108,12 @@ else
     public async Task LoadMoreTopics()
     {
         maxCount += 10;
-        topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
+        topics = await manageForumTopics.GetForumTopicsAsync(id);
 
-        if (maxCount > topics.Count)
+        if (maxCount >= topics.Count)
             loadMoreVisibility = "d-none";
+
+        topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
 
         StateHasChanged();
     }

@@ -22,12 +22,6 @@ namespace BlazorForum.Data.Repository
             return await _context.ForumTopics.Where(p => p.ForumCategoryId == catId).ToListAsync();
         }
 
-        public async Task<List<ForumTopic>> GetForumTopicsLimitedAsync(int catId, int maxCount)
-        {
-            return await _context.ForumTopics.Where(p => p.ForumCategoryId == catId)
-                .OrderByDescending(p => p.PostedDate).Take(maxCount).ToListAsync();
-        }
-
         public async Task<ForumTopic> GetForumTopic(int topicId)
         {
             return await _context.ForumTopics.Where(p => p.ForumTopicId == topicId).FirstOrDefaultAsync();

@@ -10,8 +10,6 @@ namespace BlazorForum.Domain.Interfaces
     public interface IManageForumTopics
     {
         Task<List<ForumTopic>> GetForumTopicsAsync(int categoryId);
-        Task<List<ForumTopic>> GetForumTopicsLimitedAsync(int categoryId, int maxCount);
-
         Task<ForumTopic> GetForumTopicAsync(int topicId);
         Task<bool> PostNewTopicAsync(ForumTopic newTopic);
     }
@@ -29,9 +27,6 @@ namespace BlazorForum.Domain.Interfaces
 
         public async Task<List<ForumTopic>> GetForumTopicsAsync(int categoryId) => 
             await new Data.Repository.ForumTopics(_context).GetForumTopicsAsync(categoryId);
-
-        public async Task<List<ForumTopic>> GetForumTopicsLimitedAsync(int categoryId, int maxCount) =>
-            await new Data.Repository.ForumTopics(_context).GetForumTopicsLimitedAsync(categoryId, maxCount);
 
         public async Task<ForumTopic> GetForumTopicAsync(int topicId) => 
             await new Data.Repository.ForumTopics(_context).GetForumTopic(topicId);
