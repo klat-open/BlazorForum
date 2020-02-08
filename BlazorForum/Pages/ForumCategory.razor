@@ -38,8 +38,7 @@ else
                     </a>
                     <div class="topic-blazifier">
                         Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
-                        @* // This seems to get caught in a loop...*@
-                        @*Posted By:*@ @*@userManager.FindByIdAsync(topic.UserId).Result.UserName*@
+                        | Posted By: @topic.UserName
                     </div>
                 </li>
             }
@@ -77,6 +76,12 @@ else
     {
         category = await manageForumCategories.GetForumCategoryAsync(id);
         topics = await manageForumTopics.GetForumTopicsLimitedAsync(id, maxCount);
+
+        foreach(var topic in topics)
+        {
+            var user = await userManager.FindByIdAsync(topic.UserId);
+            topic.UserName = user.UserName;
+        }
 
         if (maxCount > topics.Count)
             loadMoreVisibility = "d-none";
