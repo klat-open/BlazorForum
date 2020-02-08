@@ -78,7 +78,7 @@ else
         if (maxCount >= posts.Count)
             loadMoreVisibility = "d-none";
 
-        posts = posts.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        posts = posts.Take(maxCount).ToList();
         CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
         await AddUserToPost();
     }
@@ -97,7 +97,7 @@ else
         else
             loadMoreVisibility = "d-inline-block";
 
-        posts = posts.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        posts = posts.Take(maxCount).ToList();
         
         await AddUserToPost();
         StateHasChanged();
@@ -113,7 +113,7 @@ else
         else
             loadMoreVisibility = "d-inline-block";
 
-        posts = posts.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        posts = posts.Take(maxCount).ToList();
 
         await AddUserToPost();
         StateHasChanged();
