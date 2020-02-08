@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace BlazorForum.Models
@@ -19,6 +20,10 @@ namespace BlazorForum.Models
         [Required]
         [MaxLength(450)]
         public string UserId { get; set; }
+
+        [NotMapped]
+        [MaxLength(256)]
+        public string UserName { get; set; }
 
         [MaxLength(50)]
         public string UserIP { get; set; }
