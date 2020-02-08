@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BlazorForum.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorForum.Data.Repository
 {
@@ -19,18 +19,18 @@ namespace BlazorForum.Data.Repository
 
         public async Task<List<ForumTopic>> GetForumTopicsAsync(int catId)
         {
-            return _context.ForumTopics.Where(p => p.ForumCategoryId == catId).ToList();
+            return await _context.ForumTopics.Where(p => p.ForumCategoryId == catId).ToListAsync();
         }
 
         public async Task<List<ForumTopic>> GetForumTopicsLimitedAsync(int catId, int maxCount)
         {
-            return _context.ForumTopics.ToList().Where(p => p.ForumCategoryId == catId)
-                .OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+            return await _context.ForumTopics.Where(p => p.ForumCategoryId == catId)
+                .OrderByDescending(p => p.PostedDate).Take(maxCount).ToListAsync();
         }
 
         public async Task<ForumTopic> GetForumTopic(int topicId)
         {
-            return _context.ForumTopics.Where(p => p.ForumTopicId == topicId).FirstOrDefault();
+            return await _context.ForumTopics.Where(p => p.ForumTopicId == topicId).FirstOrDefaultAsync();
         }
 
         public async Task<bool> PostNewTopicAsync(ForumTopic newTopic)
