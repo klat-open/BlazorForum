@@ -35,7 +35,7 @@ namespace BlazorForum.Data.Repository
 
         public async Task<bool> PostNewTopicAsync(ForumTopic newTopic)
         {
-            var topics = _context.ForumTopics;
+            var topics = await _context.ForumTopics.ToListAsync();
             topics.Add(newTopic);
             await _context.SaveChangesAsync();
             return true;
