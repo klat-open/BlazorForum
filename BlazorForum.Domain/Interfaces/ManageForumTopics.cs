@@ -18,8 +18,6 @@ namespace BlazorForum.Domain.Interfaces
     {
         private readonly ApplicationDbContext _context;
 
-        public event Action OnChange;
-
         public ManageForumTopics(ApplicationDbContext context)
         {
             _context = context;
