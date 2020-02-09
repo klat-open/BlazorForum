@@ -1,10 +1,10 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(BlazorForum.Areas.Admin.Shared.MainLayout)" />
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(AdminLayout)" />
         </Found>
         <NotFound>
-            <LayoutView Layout="@typeof(BlazorForum.Areas.Admin.Shared.MainLayout)">
+            <LayoutView Layout="@typeof(AdminLayout)">
                 <p>Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>

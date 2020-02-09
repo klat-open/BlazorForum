@@ -1,0 +1,29 @@
+﻿@inherits LayoutComponentBase
+@* // Need to add roles authorization at some point. *@
+<AuthorizeView>
+    <Authorized>
+        <div class="sidebar">
+            <BlazorForum.Areas.Admin.Shared.NavMenu />
+        </div>
+
+        <div class="main">
+            <div class="top-row px-4 auth">
+                <BlazorForum.Areas.Admin.Shared.LoginDisplay />
+            </div>
+
+            <div class="content px-4">
+                @Body
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="container pt-3">
+            <div class="alert alert-warning text-center">
+                <span>
+                    <i class="oi oi-warning"></i> You are not authorized to view this page.
+                </span>
+            </div>
+        </div>
+
+    </NotAuthorized>
+</AuthorizeView>
