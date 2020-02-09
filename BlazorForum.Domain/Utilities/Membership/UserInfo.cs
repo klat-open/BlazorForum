@@ -21,11 +21,7 @@ namespace BlazorForum.Domain.Utilities.Membership
         public async Task<string> GetUserId()
         {
             var user = await GetCurrentUser();
-
-            if (user != null)
-                return user.Id;
-            else
-                return null;
+            return user?.Id;
         }
 
         private async Task<IdentityUser> GetCurrentUser()
