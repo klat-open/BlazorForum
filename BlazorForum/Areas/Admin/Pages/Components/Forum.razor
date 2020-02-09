@@ -26,7 +26,7 @@
     </section>
 </section>
 <section>
-    
+    <AddNewCategoryForm OnCategoryCreated="UpdateCategories" ForumId="@id"></AddNewCategoryForm>
 </section>
 
 @code {
@@ -38,5 +38,11 @@
     {
         forum = await manageForums.GetForumAsync(id);
         categories = await manageCategories.GetForumCategoriesAsync(id);
+    }
+
+    public async void UpdateCategories()
+    {
+        categories = await manageCategories.GetForumCategoriesAsync();
+        StateHasChanged();
     }
 }

@@ -31,5 +31,13 @@ namespace BlazorForum.Data.Repository
         {
             return await _context.ForumCategories.Where(p => p.ForumCategoryId == categoryId).FirstOrDefaultAsync();
         }
+
+        public async Task<bool> CreateCategoryAsync(ForumCategory newCategory)
+        {
+            var categories = _context.ForumCategories;
+            await categories.AddAsync(newCategory);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
