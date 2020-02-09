@@ -86,5 +86,14 @@ namespace BlazorForum.Domain.Resources {
                 return ResourceManager.GetString("MustLoginToPost", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Categories Found..
+        /// </summary>
+        public static string NoCategories {
+            get {
+                return ResourceManager.GetString("NoCategories", resourceCulture);
+            }
+        }
     }
 }

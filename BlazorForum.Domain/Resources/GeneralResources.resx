@@ -129,4 +129,8 @@
     <value>You must be logged in to add a new post.</value>
     <comment>General notice displayed on topic when user isn't logged in.</comment>
   </data>
+  <data name="NoCategories" xml:space="preserve">
+    <value>No Categories Found.</value>
+    <comment>Notice when no categories exist within a forum.</comment>
+  </data>
 </root>

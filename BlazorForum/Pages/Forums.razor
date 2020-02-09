@@ -22,6 +22,10 @@ else
             </header>
 
             <ul class="forum-ul">
+                @if(forum.ForumCategories.Count == 0)
+                {
+                    <li class="text-muted">@GeneralResources.NoCategories</li>
+                }
                 @foreach (var category in forum.ForumCategories)
                 {
                     <li>
