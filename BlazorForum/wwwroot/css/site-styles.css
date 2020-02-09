@@ -12,6 +12,20 @@
     background-color:rgb(5, 39, 103);
 }
 
+.blazorforum-footer {
+    text-align: center;
+    background-color: #e4e4e4;
+    color: #909090;
+    padding: 1em;
+    width:100%;
+    margin-top:3em;
+    font-size:small;
+}
+
+.blazorforum-footer a, .blazorforum-footer a:visited{
+    color:#717171;
+}
+
 .clear-validation.modified.valid{
     outline:none;
 }
