@@ -42,5 +42,14 @@ namespace BlazorForum.Data.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> UpdateForumAsync(Forum editedForum)
+        {
+            var forum = _context.Forums.Where(p => p.ForumId == editedForum.ForumId).FirstOrDefault();
+            forum.Title = editedForum.Title;
+            forum.Description = editedForum.Description;
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

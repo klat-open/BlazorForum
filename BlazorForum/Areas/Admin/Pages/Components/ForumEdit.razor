@@ -1,0 +1,56 @@
+﻿@page "/admin/forums/edit/{id:int}"
+
+@inject IManageForums manageForums
+@inject Microsoft.AspNetCore.Components.NavigationManager navManager
+
+<h3>Edit Forum</h3>
+
+<EditForm Model="@forum" OnValidSubmit="UpdateForum">
+    <DataAnnotationsValidator />
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <label class="input-group-text">Title</label>
+        </div>
+        <InputText id="Title" @bind-Value="forum.Title" class="@titleClass" />
+    </div>
+    <ValidationMessage For="@(() => forum.Title)" />
+
+    <InputTextArea id="Description" @bind-Value="forum.Description" rows="3" class="@textAreaClass" />
+    <ValidationMessage For="@(() => forum.Description)" />
+    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Update</button>
+    <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
+        <i class="oi oi-cog se-spin-icon"></i> Updating...
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Models.Forum forum = new Models.Forum();
+    private string titleClass { get; set; } = "form-control";
+    private string textAreaClass { get; set; } = "mt-2 form-control";
+    private string btnVisibility = "d-block";
+    private string submitVisibility = "d-none";
+
+    protected override async Task OnInitializedAsync()
+    {
+        forum = await manageForums.GetForumAsync(id);
+    }
+
+    private async Task UpdateForum()
+    {
+        var editedForum = new Models.Forum()
+        {
+            Title = forum.Title,
+            Description = forum.Description,
+            ForumId = id
+        };
+        var updated = await manageForums.UpdateForumAsync(editedForum);
+
+        btnVisibility = "d-inline-block";
+        submitVisibility = "d-none";
+        titleClass = "form-control clear-validation";
+        textAreaClass = "mt-2 form-control clear-validation";
+
+        navManager.NavigateTo("/admin/forums/details/" + id);
+    }
+}

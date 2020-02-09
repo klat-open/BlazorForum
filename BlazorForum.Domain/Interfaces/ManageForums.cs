@@ -12,6 +12,7 @@ namespace BlazorForum.Domain.Interfaces
         Task<List<Forum>> GetForumsAsync();
         Task<Forum> GetForumAsync(int id);
         Task<bool> CreateForumAsync(Forum newForum);
+        Task<bool> UpdateForumAsync(Forum editedForum);
     }
 
     public class ManageForums : IManageForums
@@ -30,5 +31,8 @@ namespace BlazorForum.Domain.Interfaces
 
         public async Task<bool> CreateForumAsync(Forum newForum) => 
             await new Data.Repository.Forums(_context).CreateForumAsync(newForum);
+
+        public async Task<bool> UpdateForumAsync(Forum editedForum) =>
+            await new Data.Repository.Forums(_context).UpdateForumAsync(editedForum);
     }
 }
