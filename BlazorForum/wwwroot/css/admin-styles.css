@@ -1,10 +1,14 @@
-﻿.btn-blazorforum{
-    background-color:rgb(5, 39, 103);
-    color:#ddd;
+﻿.bg-blazorforumbtn{
+    background-color:#333;
+}
+
+.btn-blazorforum {
+    background-color: #333;
+    color: #ddd;
 }
 
 .btn-blazorforum:hover{
-    background-color:#3a0647;
+    background-color:#555;
     color:#fff;
 }
 
@@ -14,6 +18,15 @@
 
 .clear-validation.modified.valid{
     outline:none;
+}
+
+.forum-details{
+    background-color:#333;
+    padding:0.5em;
+    border-bottom-left-radius:0.25em;
+    border-bottom-right-radius:0.25em;
+    margin-bottom:2em;
+    border-top:1px solid #000;
 }
 
 .forum-ul{
@@ -33,45 +46,8 @@
     border-bottom-left-radius:0.25em;
 }
 
-.forum-post-time{
-    font-size:0.8em;
-    color:#777;
-}
-
-.forum-post-ul{
-    margin-top:0.5em;
-    list-style:none;
-    padding-left:0px;
-}
-
-.forum-post-ul li{
-    border:1px solid #8070a6;
-    border-top:none;
-    padding:0.5em;
-    background-color:#e0dcf8;
-}
-
-    .forum-post-ul li:nth-child(1) {
-        border-top: 1px solid #8070a6;
-        border-top-left-radius: 0.25em;
-        border-top-right-radius: 0.25em;
-    }
-
-    .forum-post-ul li:last-child {
-        border-bottom-left-radius: 0.25em;
-        border-bottom-right-radius: 0.25em;
-    }
-
 .forum-description, .forum-category-description, forum-topic-description{
     color:#ccc;
-}
-
-.forum-header, .forum-category-header, .forum-topic-header {
-    background-image: linear-gradient(90deg, rgb(5, 39, 103) 0%, #3a0647 70%);
-    border-top-left-radius: 0.25em;
-    border-top-right-radius: 0.25em;
-    padding: 1em;
-    color:#fff;
 }
 
 .forum-topic-text-div {
@@ -101,6 +77,14 @@ h1, h2, h3{
 
 .se-spin-icon {
     -webkit-animation: spin 4s infinite linear;
+}
+
+.secondary-header {
+    padding: 0.5em;
+    background-color: #333;
+    border-top-left-radius: 0.25em;
+    border-top-right-radius: 0.25em;
+    border: 1px solid #000000;
 }
 
 @-webkit-keyframes spin {

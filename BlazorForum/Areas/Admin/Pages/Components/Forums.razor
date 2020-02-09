@@ -1,30 +1,38 @@
 ﻿@page "/admin/forums/"
 
-@using Domain.Interfaces;
-
 @inject IManageForums manageForums
 
-<h3>Forums</h3>
-
-@if(forums == null)
-{
-    <div>Loading Forums...</div>
-}
-else
-{
-    <ul class="forum-ul">
-        @foreach(var forum in forums)
-        {
-            <li>
-                @forum.Title
-            </li>
-        }
-    </ul>
-
-}
+<header>
+    <h3>Forums</h3>
+</header>
+<section>
+    @if (forums == null)
+    {
+        <div>Loading Forums...</div>
+    }
+    else if(forums.Count == 0)
+    {
+        <div>No Forums Found.</div>
+    }
+    else
+    {
+        <ul class="forum-ul">
+            @foreach (var forum in forums)
+            {
+                <li>
+                    <a href="@String.Format("/admin/forums/details/{0}", forum.ForumId)">
+                        @forum.Title
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+</section>
+<section>
+    <AddNewForumForm OnForumCreated="UpdateForums"></AddNewForumForm>
+</section>
 
 @code {
-
     private List<Models.Forum> forums;
     private List<Models.ForumCategory> categories;
 
@@ -33,4 +41,9 @@ else
         forums = await manageForums.GetForumsAsync();
     }
 
+    public async void UpdateForums()
+    {
+        forums = await manageForums.GetForumsAsync();
+        StateHasChanged();
+    }
 }

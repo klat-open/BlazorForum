@@ -1,0 +1,48 @@
+﻿@inject IManageForums  manageForums
+
+<h5>Create a New Forum</h5>
+
+<EditForm Model="@forum" OnValidSubmit="CreateForum">
+    <DataAnnotationsValidator />
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <label class="input-group-text">Title</label>
+        </div>
+        <InputText id="Title" @bind-Value="forum.Title" class="@titleClass" />
+    </div>
+    <ValidationMessage For="@(() => forum.Title)" />
+
+    <InputTextArea id="Description" @bind-Value="forum.Description" rows="3" class="@textAreaClass" />
+    <ValidationMessage For="@(() => forum.Description)" />
+    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Add Forum</button>
+    <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility"><i class="oi oi-cog se-spin-icon"></i> Adding Forum...</div>
+</EditForm>
+
+@code {
+    [Parameter] public Action OnForumCreated { get; set; }
+    private Models.Forum forum = new Models.Forum();
+    private string titleClass { get; set; } = "form-control";
+    private string textAreaClass { get; set; } = "mt-2 form-control";
+    private string btnVisibility = "d-block";
+    private string submitVisibility = "d-none";
+
+    private async Task CreateForum()
+    {
+        var newForum = new Models.Forum()
+        {
+            Title = forum.Title,
+            Description = forum.Description
+        };
+        var added = await manageForums.CreateForumAsync(newForum);
+
+        btnVisibility = "d-inline-block";
+        submitVisibility = "d-none";
+        forum.Title = string.Empty;
+        forum.Description = string.Empty;
+
+        titleClass = "form-control clear-validation";
+        textAreaClass = "mt-2 form-control clear-validation";
+
+        OnForumCreated?.Invoke();
+    }
+}

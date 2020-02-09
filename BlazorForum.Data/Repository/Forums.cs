@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BlazorForum.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorForum.Data.Repository
 {
@@ -18,16 +19,28 @@ namespace BlazorForum.Data.Repository
 
         public async Task<List<Forum>> GetForumsAsync()
         {
-            var forums = _context.Forums.ToList();
+            var forums = await _context.Forums.ToListAsync();
 
             foreach (var forum in forums)
             {
-                forum.ForumCategories = new ForumCategories(_context).GetForumCategoriesAsync()
-                    .Result
-                    .Where(p => p.ForumId == forum.ForumId).ToList();
+                forum.ForumCategories = await _context.ForumCategories
+                    .Where(p => p.ForumId == forum.ForumId).ToListAsync();
             }
 
             return forums;
+        }
+
+        public async Task<Forum> GetForumAsync(int id)
+        {
+            return await _context.Forums.Where(p => p.ForumId == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> CreateForumAsync(Forum newForum)
+        {
+            var forums = _context.Forums;
+            await forums.AddAsync(newForum);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

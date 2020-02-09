@@ -1,8 +1,4 @@
 ﻿### KNOWN ISSUES ###
-* Title doesn't appear immediately after new topic/post is added.
-
-* Posting a new topic or post two times in a row generates an Entity Db error. Is the dependency injection container not disposing context instances?
-
 * Issues with admin theme flipping back and forth when pages refresh. The admin index page (Dashboard) doesn't do it.
 
 

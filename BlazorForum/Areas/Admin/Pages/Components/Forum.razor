@@ -1,0 +1,42 @@
+﻿@page "/admin/forums/details/{id:int}"
+
+@inject IManageForums manageForums
+@inject IManageForumCategories manageCategories
+
+<section class="mb-3">
+    <button class="btn btn-blazorforum">Edit Details</button>
+</section>
+<section>
+    <header>
+        <h3>@forum.Title</h3>
+        <div class="forum-details">@forum.Description</div>
+    </header>
+    <section>
+        <header class="secondary-header">
+            Categories
+        </header>
+        <ul class="forum-ul">
+            @foreach (var category in categories)
+            {
+                <li>
+                    @category.Title
+                </li>
+            }
+        </ul>
+    </section>
+</section>
+<section>
+    
+</section>
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Models.Forum forum = new Models.Forum();
+    private List<Models.ForumCategory> categories = new List<Models.ForumCategory>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        forum = await manageForums.GetForumAsync(id);
+        categories = await manageCategories.GetForumCategoriesAsync(id);
+    }
+}
