@@ -17,9 +17,10 @@
     background-color: #e4e4e4;
     color: #909090;
     padding: 1em;
+    font-size: small;
+    bottom:0px;
+    position:absolute;
     width:100%;
-    margin-top:3em;
-    font-size:small;
 }
 
 .blazorforum-footer a, .blazorforum-footer a:visited{
@@ -117,4 +118,11 @@
 .topic-blazifier{
     font-size:0.8em;
     color:#6e6986;
+}
+
+@media (min-width: 768px){
+    .blazorforum-footer {
+        width: calc(100% - 250px);
+        height:auto;
+    }
 }
