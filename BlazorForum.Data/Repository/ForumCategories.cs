@@ -39,5 +39,16 @@ namespace BlazorForum.Data.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> UpdateCategoryAsync(ForumCategory editedCategory)
+        {
+            var category = _context.ForumCategories.Where(p => p.ForumCategoryId == editedCategory.ForumCategoryId).FirstOrDefault();
+            category.Title = editedCategory.Title;
+            category.Description = editedCategory.Description;
+            category.ForumId = editedCategory.ForumId;
+            category.Rank = editedCategory.Rank;
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

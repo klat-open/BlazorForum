@@ -1,10 +1,10 @@
-﻿@page "/admin/forums/details/{id:int}"
+﻿@page "/admin/forums/{id:int}"
 
 @inject IManageForums manageForums
 @inject IManageForumCategories manageCategories
 
 <section class="mb-3">
-    <a href="/admin/forums/edit/@id" class="btn btn-blazorforum">Edit Details</a>
+    <a href="@String.Format("/admin/forums/{0}/edit", id)" class="btn btn-blazorforum">Edit Details</a>
 </section>
 <section>
     <header>
@@ -13,14 +13,17 @@
     </header>
     <section>
         <header class="secondary-header">
-            Categories
+            <i class="oi oi-folder mr-2"></i>Categories
         </header>
         <ul class="forum-ul">
             @foreach (var category in categories)
             {
-                <li>
+            <li>
+                <a href="@String.Format("/admin/forums/{0}/categories/{1}", 
+                          forum.ForumId, category.ForumCategoryId)">
                     @category.Title
-                </li>
+                </a>
+            </li>
             }
         </ul>
     </section>

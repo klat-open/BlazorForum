@@ -1,9 +1,9 @@
-﻿@page "/admin/forums/edit/{id:int}"
+﻿@page "/admin/forums/{id:int}/edit"
 
 @inject IManageForums manageForums
-@inject Microsoft.AspNetCore.Components.NavigationManager navManager
+@inject NavigationManager navManager
 
-<h3>Edit Forum</h3>
+<h3>Forum</h3>
 
 <EditForm Model="@forum" OnValidSubmit="UpdateForum">
     <DataAnnotationsValidator />
@@ -48,8 +48,6 @@
 
         btnVisibility = "d-inline-block";
         submitVisibility = "d-none";
-        titleClass = "form-control clear-validation";
-        textAreaClass = "mt-2 form-control clear-validation";
 
         navManager.NavigateTo("/admin/forums/details/" + id);
     }

@@ -46,6 +46,15 @@
     border-bottom-left-radius:0.25em;
 }
 
+.forum-ul li .list-item-details{
+    background-color:#333;
+    color:#999;
+    font-size:small;
+    padding:0.5em;
+    border-radius:0.25em;
+    margin-top:0.5em;
+}
+
 .forum-description, .forum-category-description, forum-topic-description{
     color:#ccc;
 }

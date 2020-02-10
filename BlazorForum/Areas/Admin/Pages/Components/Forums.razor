@@ -21,7 +21,7 @@
             @foreach (var forum in forums)
             {
                 <li>
-                    <a href="@String.Format("/admin/forums/details/{0}", forum.ForumId)">
+                    <a href="@String.Format("/admin/forums/{0}", forum.ForumId)">
                         @forum.Title
                     </a>
                 </li>

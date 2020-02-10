@@ -1,0 +1,57 @@
+﻿@page "/admin/forums/{forumId:int}/categories/{id:int}/edit"
+
+@inject IManageForumCategories manageCategories
+@inject NavigationManager navManager
+
+<h3>Forum Category</h3>
+
+<EditForm Model="@category" OnValidSubmit="UpdateCategory">
+    <DataAnnotationsValidator />
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <label class="input-group-text">Title</label>
+        </div>
+        <InputText id="Title" @bind-Value="category.Title" class="@titleClass" />
+    </div>
+    <ValidationMessage For="@(() => category.Title)" />
+
+    <InputTextArea id="Description" @bind-Value="category.Description" rows="3" class="@textAreaClass" />
+    <ValidationMessage For="@(() => category.Description)" />
+    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Update</button>
+    <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
+        <i class="oi oi-cog se-spin-icon"></i> Updating...
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+    [Parameter] public int forumId { get; set; }
+    private Models.ForumCategory category = new Models.ForumCategory();
+    private string titleClass { get; set; } = "form-control";
+    private string textAreaClass { get; set; } = "mt-2 form-control";
+    private string btnVisibility = "d-block";
+    private string submitVisibility = "d-none";
+
+    protected override async Task OnInitializedAsync()
+    {
+        category = await manageCategories.GetForumCategoryAsync(id);
+    }
+
+    private async Task UpdateCategory()
+    {
+        var editedCategory = new Models.ForumCategory()
+        {
+            Title = category.Title,
+            Description = category.Description,
+            ForumCategoryId = id,
+            ForumId = forumId,
+            Rank = category.Rank
+        };
+        var updated = await manageCategories.UpdateCategoryAsync(editedCategory);
+
+        btnVisibility = "d-inline-block";
+        submitVisibility = "d-none";
+
+        navManager.NavigateTo(String.Format("/admin/forums/{0}/categories/{1}", forumId, id));
+    }
+}

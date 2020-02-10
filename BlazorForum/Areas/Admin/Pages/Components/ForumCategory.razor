@@ -1,0 +1,65 @@
+﻿@page "/admin/forums/{forumId:int}/categories/{id:int}"
+
+@inject IManageForumCategories manageCategories
+@inject IManageForumTopics manageTopics
+@inject UserManager<IdentityUser> userManager
+
+<section class="mb-3">
+    <a href="@String.Format("/admin/forums/{0}/categories/{1}/edit", forumId, id)"
+       class="btn btn-blazorforum">Edit Details</a>
+</section>
+<section>
+    <header>
+        <h3>@category.Title</h3>
+        <div class="forum-details">@category.Description</div>
+    </header>
+    <section>
+        <header class="secondary-header">
+            <i class="oi oi-comment-square mr-2"></i>Topics
+        </header>
+        <ul class="forum-ul">
+            @if (topics == null)
+            {
+                <li>Loading...</li>
+            }
+            @foreach (var topic in topics)
+            {
+                <li> 
+                @* // TODO - Add Edit/Delete functionality, display post flag count, mark as approved..etc. *@
+                @* //      - Also build topic component *@
+                    <a href="@String.Format("/admin/forums/{0}/categories/{1}/topics/{2}",
+                            forumId, id, topic.ForumTopicId)">@topic.Title</a>
+                    <div class="list-item-details">
+                        Posted @DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
+                        by @topic.UserName | Flags @topic.Flags
+                        <div>Edit | Delete</div>
+                    </div>
+                 </li>
+             }
+        </ul>
+    </section>
+</section>
+
+@code {
+    [Parameter] public int forumId { get; set; }
+    [Parameter] public int id { get; set; }
+    private Models.ForumCategory category = new Models.ForumCategory();
+    private List<Models.ForumTopic> topics = new List<Models.ForumTopic>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        category = await manageCategories.GetForumCategoryAsync(id);
+        topics = await manageTopics.GetForumTopicsAsync(id);
+        topics = topics.OrderByDescending(p => p.PostedDate).ToList();
+        await AddUserToTopic();
+    }
+
+    private async Task AddUserToTopic()
+    {
+        foreach (var topic in topics)
+        {
+            var user = await userManager.FindByIdAsync(topic.UserId);
+            topic.UserName = user.UserName;
+        }
+    }
+}
