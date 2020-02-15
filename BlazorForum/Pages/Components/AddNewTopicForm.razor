@@ -1,7 +1,8 @@
 ﻿@inject IManageForumTopics manageForumTopics
 @inject NavigationManager navManager
+@inject IJSRuntime jsRuntime
 
-<EditForm Model="@forumTopic" OnValidSubmit="PostTopic">
+<EditForm id="TestForm" EditContext="@_editContext" OnSubmit="PostTopic">
     <DataAnnotationsValidator />
     <div class="input-group">
         <div class="input-group-prepend">
@@ -11,9 +12,11 @@
     </div>
     <ValidationMessage For="@(() => forumTopic.Title)" />
 
-    <InputTextArea id="TopicText" @bind-Value="forumTopic.TopicText" rows="3" class="@textAreaClass" />
+    <div class="mt-2">
+        <InputTextArea id="TopicText" @bind-Value="forumTopic.TopicText" rows="3" class="@textAreaClass" />
+    </div>
     <ValidationMessage For="@(() => forumTopic.TopicText)" />
-    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Post Topic</button>
+    <button id="submitBtn" class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Post Topic</button>
     <div class="rounded bg-veryDarkBlue p-2 mt-2 text-light @submitVisibility"><i class="oi oi-cog se-spin-icon"></i> Posting</div>
 </EditForm>
 
@@ -21,39 +24,63 @@
     [Parameter] public Action OnTopicAdded { get; set; }
     [Parameter] public int ForumId { get; set; }
     [Parameter] public string CurrentUserId { get; set; }
+    private EditContext _editContext;
     private Models.ForumTopic forumTopic = new Models.ForumTopic() { UserId = "placeholder"};
     private string btnVisibility = "d-block";
     private string submitVisibility = "d-none";
     private string titleClass { get; set; } = "form-control";
     private string textAreaClass { get; set; } = "mt-2 form-control";
 
-    private async Task PostTopic()
+    protected override void OnInitialized()
     {
-        btnVisibility = "d-none";
-        submitVisibility = "d-inline-block";
-        var newTopic = new ForumTopic()
+        _editContext = new EditContext(forumTopic);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            Title = forumTopic.Title,
-            TopicText = forumTopic.TopicText,
-            UserId = CurrentUserId,
-            PostedDate = DateTime.Now.ToUniversalTime(),
-            ForumCategoryId = ForumId,
-            Flags = 0,
-            IsModeratorChanged = false,
-            IsDeleted = false,
-            IsApproved = true
-        };
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor");
+        }
+    }
 
-        var posted = await manageForumTopics.PostNewTopicAsync(newTopic);
+    public async Task PostTopic()
+    {
+        var editorText = await jsRuntime.InvokeAsync<string>("methods.getTopicText");
+        // There's probably a better way to do this. Maybe CKEditor has a way to properly format without needing this
+        forumTopic.TopicText = RegularExp.RemoveScriptTags(System.Web.HttpUtility.HtmlDecode(editorText));
+        var isValid = _editContext.Validate();
+        if (isValid)
+        {
+            btnVisibility = "d-none";
+            submitVisibility = "d-inline-block";
+            var newTopic = new ForumTopic()
+            {
+                Title = forumTopic.Title,
+                TopicText = forumTopic.TopicText,
+                UserId = CurrentUserId,
+                PostedDate = DateTime.Now.ToUniversalTime(),
+                ForumCategoryId = ForumId,
+                Flags = 0,
+                IsModeratorChanged = false,
+                IsDeleted = false,
+                IsApproved = true
+            };
+            var posted = await manageForumTopics.PostNewTopicAsync(newTopic);
 
-        btnVisibility = "d-inline-block";
-        submitVisibility = "d-none";
-        forumTopic.Title = string.Empty;
-        forumTopic.TopicText = string.Empty;
+            btnVisibility = "d-inline-block";
+            submitVisibility = "d-none";
+            forumTopic.Title = string.Empty;
+            forumTopic.TopicText = string.Empty;
 
-        titleClass = "form-control clear-validation";
-        textAreaClass = "mt-2 form-control clear-validation";
+            // TODO: This isn't clearing quite right.
+            await jsRuntime.InvokeVoidAsync("methods.clearEditor");
 
-        OnTopicAdded?.Invoke();
+            titleClass = "form-control clear-validation";
+            textAreaClass = "mt-2 form-control clear-validation";
+
+            OnTopicAdded?.Invoke();
+        }
+
     }
 }

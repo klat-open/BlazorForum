@@ -22,7 +22,7 @@ else
         <h3>@topic.Title</h3>
     </header>
     <div class="forum-topic-text-div">
-        @topic.TopicText
+        @((MarkupString)topic.TopicText)
     </div>
 
     if (posts != null && posts.Count > 0)

@@ -35,5 +35,27 @@
     <script>
         setDocTitle = (title) => { document.title = title; };
     </script>
+    <script src="~/scripts/js/ckeditor.js"></script>
+    <script>
+       var editor = null;
+        window.methods = {
+            loadEditor: function () {
+                ClassicEditor
+                    .create(document.querySelector('#TopicText'))
+                    .then(editor => {
+                        document.querySelector('#TopicText').innerHTML = editor.getData();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+             },
+            getTopicText: function () {
+                return document.querySelector('#TopicText').innerHTML;
+            },
+            clearEditor: function () {
+                document.querySelector('.ck-content').innerHTML = "";
+            }
+        }
+    </script>
 </body>
 </html>
