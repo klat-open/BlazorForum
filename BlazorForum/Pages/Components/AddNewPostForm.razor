@@ -1,9 +1,10 @@
 ﻿@inject Domain.Interfaces.IManageForumPosts manageForumPosts
 @inject NavigationManager navManager
+@inject IJSRuntime jsRuntime
 
-<EditForm Model="@forumPost" OnValidSubmit="AddNewPost">
+<EditForm EditContext="@_editContext" OnSubmit="AddNewPost">
     <DataAnnotationsValidator />
-    <InputTextArea id="PostText" @bind-Value="forumPost.PostText" rows="3" class="@textAreaClass" />
+    <InputTextArea id="PostText" @bind-Value="forumPost.PostText" />
     <ValidationMessage For="@(() => forumPost.PostText)" />
     <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">
         @GeneralResources.AddPostBtnText
@@ -17,35 +18,52 @@
     [Parameter] public string CurrentUserId { get; set; }
     [Parameter] public Action OnPostAdded { get; set; }
     [Parameter] public int TopicId { get; set; }
+    private EditContext _editContext;
     private Models.ForumPost forumPost = new Models.ForumPost() { UserId = "placeholder" };
     private string btnVisibility = "d-block";
     private string submitVisibility = "d-none";
-    private string textAreaClass { get; set; } = "mt-2 form-control";
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(forumPost);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "PostText");
+        }
+    }
 
     private async Task AddNewPost()
     {
-        btnVisibility = "d-none";
-        submitVisibility = "d-inline-block";
-
-        var newPost = new Models.ForumPost()
+        forumPost.PostText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
+        var isValid = _editContext.Validate();
+        if (isValid)
         {
-            PostText = forumPost.PostText,
-            UserId = CurrentUserId,
-            PostedDate = DateTime.Now.ToUniversalTime(),
-            ForumTopicId = TopicId,
-            Flags = 0,
-            IsModeratorChanged = false,
-            IsDeleted = false,
-            IsApproved = true
-        };
-        var posted = await manageForumPosts.AddNewPostAsync(newPost);
+            btnVisibility = "d-none";
+            submitVisibility = "d-inline-block";
 
-        btnVisibility = "d-inline-block";
-        submitVisibility = "d-none";
-        forumPost.PostText = string.Empty;
+            var newPost = new Models.ForumPost()
+            {
+                PostText = forumPost.PostText,
+                UserId = CurrentUserId,
+                PostedDate = DateTime.Now.ToUniversalTime(),
+                ForumTopicId = TopicId,
+                Flags = 0,
+                IsModeratorChanged = false,
+                IsDeleted = false,
+                IsApproved = true
+            };
+            var posted = await manageForumPosts.AddNewPostAsync(newPost);
 
-        textAreaClass = "mt-2 form-control clear-validation";
+            btnVisibility = "d-inline-block";
+            submitVisibility = "d-none";
+            forumPost.PostText = string.Empty;
+            await jsRuntime.InvokeVoidAsync("methods.clearEditor");
 
-        OnPostAdded?.Invoke();
+            OnPostAdded?.Invoke();
+        }
     }
 }

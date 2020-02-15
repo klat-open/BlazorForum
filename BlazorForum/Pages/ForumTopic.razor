@@ -31,7 +31,7 @@ else
             @foreach (var post in posts)
             {
                 <li>
-                    @post.PostText
+                    @((MarkupString)post.PostText)
                     <div class="forum-post-time">
                         Posted @DateTimeFormatting.RelativeDateAgo(post.PostedDate) 
                         by @post.UserName

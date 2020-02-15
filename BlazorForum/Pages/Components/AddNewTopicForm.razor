@@ -40,15 +40,14 @@
     {
         if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("methods.loadEditor");
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "TopicText");
         }
     }
 
     public async Task PostTopic()
     {
-        var editorText = await jsRuntime.InvokeAsync<string>("methods.getTopicText");
-        // There's probably a better way to do this. Maybe CKEditor has a way to properly format without needing this
-        forumTopic.TopicText = RegularExp.RemoveScriptTags(System.Web.HttpUtility.HtmlDecode(editorText));
+        var editorText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
+        forumTopic.TopicText = editorText; // RegularExp.RemoveScriptTags(System.Web.HttpUtility.HtmlDecode(editorText));
         var isValid = _editContext.Validate();
         if (isValid)
         {
@@ -72,8 +71,6 @@
             submitVisibility = "d-none";
             forumTopic.Title = string.Empty;
             forumTopic.TopicText = string.Empty;
-
-            // TODO: This isn't clearing quite right.
             await jsRuntime.InvokeVoidAsync("methods.clearEditor");
 
             titleClass = "form-control clear-validation";
