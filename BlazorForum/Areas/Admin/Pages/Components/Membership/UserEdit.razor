@@ -1,0 +1,87 @@
+﻿@page "/admin/membership/{id}/edit"
+@inject UserManager<IdentityUser> userManager
+@inject NavigationManager navManager
+
+<h3>Edit User</h3>
+@if (_user == null)
+{
+    <div><i class="oi oi-cog se-spin-icon"></i>Loading User Information...</div>
+}
+else
+{
+    <EditForm Model="_user">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Username</span>
+            </div>
+            <InputText @bind-Value="_user.UserName" class="form-control"></InputText>
+        </div>
+        <ValidationMessage For="@(() => _user.UserName)"></ValidationMessage>
+
+        <div class="input-group mt-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Email</span>
+            </div>
+            <InputText @bind-Value="_user.Email" class="form-control"></InputText>
+        </div>
+        <ValidationMessage For="@(() => _user.Email)"></ValidationMessage>
+
+        <div class="input-group mt-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Email Confirmed</span>
+            </div>
+            <div class="form-control">
+                <InputCheckbox @bind-Value="_user.EmailConfirmed"></InputCheckbox>
+            </div>
+        </div>
+
+        <div class="input-group mt-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Two Factor Enabled</span>
+            </div>
+            <div class="form-control">
+                <InputCheckbox @bind-Value="_user.TwoFactorEnabled"></InputCheckbox>
+            </div>
+        </div>
+
+        <div class="input-group mt-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Phone Number</span>
+            </div>
+            <InputText @bind-Value="_user.PhoneNumber" class="form-control"></InputText>
+        </div>
+        <ValidationMessage For="@(() => _user.PhoneNumber)"></ValidationMessage>
+
+        <div class="input-group mt-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Phone Number Confirmed</span>
+            </div>
+            <div class="form-control">
+                <InputCheckbox @bind-Value="_user.PhoneNumberConfirmed"></InputCheckbox>
+            </div>
+        </div>
+    </EditForm>
+
+    <div class="mt-2">
+        <button @onclick="UpdateUser" class="btn btn-blazorforum mr-2">Update</button>
+        <button @onclick="@(() => navManager.NavigateTo("/admin/membership/"))" class="btn btn-blazorforum">Cancel</button>
+    </div>
+}
+
+
+@code {
+    [Parameter] public string id { get; set; }
+    private IdentityUser _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = await userManager.FindByIdAsync(id);
+    }
+
+    private async Task UpdateUser()
+    {
+        var update = await userManager.UpdateAsync(_user);
+        if (update.Succeeded)
+            navManager.NavigateTo("/admin/membership/");
+    }
+}

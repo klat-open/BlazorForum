@@ -1,0 +1,44 @@
+﻿@page "/admin/membership"
+@inject UserManager<IdentityUser> userManager
+@inject RoleManager<IdentityRole> roleManager
+
+<h3>Users (@(_users != null ? _users.Count.ToString() : "0"))</h3>
+<ul class="forum-ul">
+    @if (_users == null)
+    {
+    <li><i class="oi oi-cog se-spin-icon"></i> Loading Users...</li>
+    }
+    else
+    {
+        foreach (var user in _users)
+        {
+            <li><a href="@String.Format("/admin/membership/{0}/edit", user.Id)">@user.UserName</a></li>
+        }
+    }
+</ul>
+
+<h3>Roles</h3>
+<ul class="forum-ul">
+    @if(_roles == null)
+    {
+    <li><i class="oi oi-cog se-spin-icon"></i> Loading Roles...</li>
+    }
+    else
+    {
+        foreach (var role in _roles)
+        {
+            <li>@role.Name</li>
+        }
+    }
+</ul>
+
+@code {
+    private IList<IdentityUser> _users;
+    private IList<IdentityRole> _roles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _users = userManager.Users.OrderBy(p => p.UserName).ToList();
+        _roles = roleManager.Roles.OrderBy(p => p.Name).ToList();
+    }
+}
