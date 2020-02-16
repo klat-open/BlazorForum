@@ -1,0 +1,61 @@
+﻿/*!
+Theme Name: Red Theme
+Theme URI: https://elliottbrand.com/
+Author: Steve Elliott
+Author URI: https://elliottbrand.com/
+Description: A custom theme developed for a BlazorForum app.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: LICENSE
+Text Domain: red-theme
+*/
+
+body {
+    background-color:#fff;
+}
+
+a, a:visited{
+    color:#be0000;
+}
+
+a:hover{
+    color:#ea0000;
+}
+
+.btn-blazorforum {
+    background-color: #b50000;
+    color: #fff;
+}
+
+    .btn-blazorforum:hover {
+        background-color: #ea0000;
+        color: #fff;
+    }
+
+.forum-header, .forum-category-header, .forum-topic-header {
+    background-image: linear-gradient(90deg, #6c0000 0%, #be0000 70%);
+    border-top-left-radius: 0.25em;
+    border-top-right-radius: 0.25em;
+    padding: 1em;
+    color: #fff;
+}
+
+.forum-post-ul li {
+    background-color: #ebebeb;
+}
+
+.forum-topic-text-div {
+    background-color: #ebebeb;
+}
+
+.main section.top-row{
+    background-color:#6b0000;
+}
+
+.main .top-row > a, .main .top-row .btn-link {
+    color:#fff;
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, #530000 0%, #be0000 80%);
+}
