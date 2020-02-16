@@ -1,4 +1,5 @@
 ﻿@page "/admin/forums/{id:int}"
+@layout AdminLayout
 
 @inject IManageForums manageForums
 @inject IManageForumCategories manageCategories
@@ -18,12 +19,12 @@
         <ul class="forum-ul">
             @foreach (var category in categories)
             {
-            <li>
-                <a href="@String.Format("/admin/forums/{0}/categories/{1}", 
+                <li>
+                    <a href="@String.Format("/admin/forums/{0}/categories/{1}",
                           forum.ForumId, category.ForumCategoryId)">
-                    @category.Title
-                </a>
-            </li>
+                        @category.Title
+                    </a>
+                </li>
             }
         </ul>
     </section>

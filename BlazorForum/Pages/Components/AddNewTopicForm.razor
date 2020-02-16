@@ -46,8 +46,7 @@
 
     public async Task PostTopic()
     {
-        var editorText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
-        forumTopic.TopicText = editorText; // RegularExp.RemoveScriptTags(System.Web.HttpUtility.HtmlDecode(editorText));
+        forumTopic.TopicText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
         var isValid = _editContext.Validate();
         if (isValid)
         {

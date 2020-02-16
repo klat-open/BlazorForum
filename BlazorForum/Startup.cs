@@ -43,6 +43,7 @@ namespace BlazorForum
             services.AddScoped<IManageForumCategories, ManageForumCategories>();
             services.AddScoped<IManageForumTopics, ManageForumTopics>();
             services.AddScoped<IManageForumPosts, ManageForumPosts>();
+            services.AddScoped<IManageThemes, ManageThemes>();
 
             services.AddRazorPages();
             services.AddServerSideBlazor();

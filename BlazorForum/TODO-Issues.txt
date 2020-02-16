@@ -5,8 +5,6 @@
 ### TODO ###
 * It would be nice if this could be updated with the click of a button at some point (when new app versions are released)
 
-* Change user usernames to actual username instead of email
-
 * Maybe add spinner to load more, when loading more topics/posts
 
 * Move strings to a resources file

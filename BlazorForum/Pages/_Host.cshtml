@@ -1,8 +1,13 @@
 ﻿@page "/"
 @namespace BlazorForum.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Domain.Interfaces
+@inject Data.ApplicationDbContext context
+
 @{
     Layout = null;
+    string themeName = new Domain.Interfaces.ManageThemes(context)
+        .GetSelectedThemeNameAsync().Result;
 }
 
 <!DOCTYPE html>
@@ -15,6 +20,10 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="~/css/site-styles.css" rel="stylesheet" />
+    @if (!String.IsNullOrEmpty(themeName))
+    {
+        <link href="~/custom-themes/@themeName/styles.css" rel="stylesheet" />
+    }
 </head>
 <body>
     <app>
@@ -37,7 +46,7 @@
     </script>
     <script src="~/scripts/js/ckeditor.js"></script>
     <script>
-       var ckeditor = null;
+        var ckeditor = null;
         window.methods = {
             loadEditor: function (TextAreaId) {
                 ClassicEditor
@@ -48,7 +57,7 @@
                     .catch(error => {
                         console.error(error);
                     });
-             },
+            },
             getEditorText: function () {
                 return ckeditor.getData();
             },

@@ -1,0 +1,89 @@
+﻿@page "/admin/settings/"
+@layout AdminLayout
+
+@inject IManageThemes manageThemes
+
+<h3>Themes</h3>
+
+@if (themeInfoList != null)
+{
+    <ul class="forum-ul">
+        <li>
+            <div class="font-weight-bold">Default Theme</div>
+            <div>The default theme is the fallback theme. It will be used when no other theme is selected.</div>
+        </li>
+        @foreach (var theme in themeInfoList)
+        {
+            <li>
+                <div class="font-weight-bold">
+                    @theme.ThemeName
+                </div>
+                <div>@theme.Description</div>
+                <small>Author: @theme.Author | Version: @theme.Version</small><br />
+                @if(selectedTheme == theme.TextDomain)
+                {
+                    <button @onclick="UnselectTheme" class="btn btn-sm btn-blazorforum">Unselect</button>
+                }
+                else
+                {
+                    <button @onclick="(() => SelectTheme(theme.TextDomain))" class="btn btn-sm btn-blazorforum">Select Theme</button>
+                }  
+            </li>
+        }
+    </ul>
+}
+
+
+@code {
+    private Theme sitetheme = new Theme();
+    private List<ThemeInfo> themeInfoList = new List<ThemeInfo>();
+    private string selectedTheme;
+
+    protected override async Task OnInitializedAsync()
+    {
+        selectedTheme = await manageThemes.GetSelectedThemeNameAsync();
+
+        var themes = System.IO.Directory.GetDirectories("wwwroot/custom-themes/");
+
+        foreach (var theme in themes)
+        {
+            var lines = System.IO.File.ReadLines(theme + "/styles.css");
+
+            if (lines != null && lines.Count() > 0)
+            {
+                var themeInfo = new ThemeInfo
+                {
+                    ThemeName = GetThemeInfo(lines, "Theme Name").Replace("Theme Name:", "").Trim(),
+                    TextDomain = GetThemeInfo(lines, "Text Domain").Replace("Text Domain:", "").Trim(),
+                    Author = GetThemeInfo(lines, "Author").Replace("Author:", "").Trim(),
+                    Description = GetThemeInfo(lines, "Description").Replace("Description:","").Trim(),
+                    Version = GetThemeInfo(lines, "Version").Replace("Version:","").Trim()
+                };
+                themeInfoList.Add(themeInfo);
+            }
+        }
+    }
+
+    private string GetThemeInfo(IEnumerable<string> lines, string ThemeProperty)
+    {
+        var line = lines.SkipWhile(p => !p.Contains(ThemeProperty + ":"))
+            .TakeWhile(p => p.Contains(ThemeProperty + ":")).FirstOrDefault();
+        return line;
+    }
+
+    private async Task UnselectTheme()
+    {
+        var removed = await manageThemes.RemoveThemesAsync();
+        if(removed)
+            selectedTheme = await manageThemes.GetSelectedThemeNameAsync();
+        StateHasChanged();
+    }
+
+    private async Task SelectTheme(string textDomain)
+    {
+        var added = await manageThemes.AddThemeAsync(textDomain);
+        if(added)
+            selectedTheme = await manageThemes.GetSelectedThemeNameAsync();
+        StateHasChanged();
+    }
+}

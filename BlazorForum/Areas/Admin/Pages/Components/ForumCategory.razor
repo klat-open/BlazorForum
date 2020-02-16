@@ -1,4 +1,5 @@
 ﻿@page "/admin/forums/{forumId:int}/categories/{id:int}"
+@layout AdminLayout
 
 @inject IManageForumCategories manageCategories
 @inject IManageForumTopics manageTopics
@@ -24,18 +25,18 @@
             }
             @foreach (var topic in topics)
             {
-                <li> 
-                @* // TODO - Add Edit/Delete functionality, display post flag count, mark as approved..etc. *@
-                @* //      - Also build topic component *@
+                <li>
+                    @* // TODO - Add Edit/Delete functionality, display post flag count, mark as approved..etc. *@
+                    @* //      - Also build topic component *@
                     <a href="@String.Format("/admin/forums/{0}/categories/{1}/topics/{2}",
                             forumId, id, topic.ForumTopicId)">@topic.Title</a>
-                    <div class="list-item-details">
-                        Posted @DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
-                        by @topic.UserName | Flags @topic.Flags
-                        <div>Edit | Delete</div>
-                    </div>
-                 </li>
-             }
+                            <div class="list-item-details">
+                                Posted @DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
+                                by @topic.UserName | Flags @topic.Flags
+                                <div>Edit | Delete</div>
+                            </div>
+                        </li>
+                    }
         </ul>
     </section>
 </section>
