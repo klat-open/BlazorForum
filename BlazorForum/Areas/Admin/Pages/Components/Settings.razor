@@ -1,6 +1,7 @@
 ﻿@page "/admin/settings/"
 
 @inject IManageThemes manageThemes
+@inject IJSRuntime  jsRuntime
 
 <h3>Themes</h3>
 
@@ -61,6 +62,11 @@
                 themeInfoList.Add(themeInfo);
             }
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("setDocTitle", "Settings | Administration");
     }
 
     private string GetThemeInfo(IEnumerable<string> lines, string ThemeProperty)

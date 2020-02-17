@@ -1,6 +1,6 @@
 ﻿@page "/admin/"
 
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime jsRuntime
 
 <h1>Administration</h1>
 
@@ -9,6 +9,6 @@ Welcome to your administration area.
 @code{
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync("setDocTitle", "Dashboard | Administration");
+        await jsRuntime.InvokeVoidAsync("setDocTitle", "Dashboard | Administration");
     }
 }

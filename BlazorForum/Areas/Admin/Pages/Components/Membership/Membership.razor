@@ -1,6 +1,7 @@
 ﻿@page "/admin/membership"
 @inject UserManager<IdentityUser> userManager
 @inject RoleManager<IdentityRole> roleManager
+@inject IJSRuntime jsRuntime
 
 <h3>Users (@(_users != null ? _users.Count.ToString() : "0"))</h3>
 <ul class="forum-ul">
@@ -40,5 +41,10 @@
     {
         _users = userManager.Users.OrderBy(p => p.UserName).ToList();
         _roles = roleManager.Roles.OrderBy(p => p.Name).ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("setDocTitle", "Membership | Administration");
     }
 }

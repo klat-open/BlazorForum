@@ -1,6 +1,7 @@
 ﻿@page "/admin/membership/{id}/edit"
 @inject UserManager<IdentityUser> userManager
 @inject NavigationManager navManager
+@inject IJSRuntime jsRuntime
 
 <h3>Edit User</h3>
 @if (_user == null)
@@ -76,6 +77,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         _user = await userManager.FindByIdAsync(id);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("setDocTitle", "Edit User | Administration");
     }
 
     private async Task UpdateUser()

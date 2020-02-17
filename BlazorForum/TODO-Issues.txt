@@ -11,4 +11,10 @@
 
 * Admin - Membership sections are under development.
 
-* dmin - Need to add Pages and Modules sections, or decide if they should be created.
+* Roles - Not really sure what the best approach is for adding Roles ability, so Roles could be assigned to allow Moderators for specific Forums.
+
+* Would be nice if a default user (Administrator) could somehow be installed when someone first builds/runs the application? Or maybe the first registered user is automatically assigned to the Administrator role?
+
+* Admin - Need to add Pages and Modules sections, or decide if they should be created.
+
+*** TESTS need written ***
