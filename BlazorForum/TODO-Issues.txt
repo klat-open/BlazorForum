@@ -3,8 +3,12 @@
 
 
 ### TODO ###
-* It would be nice if this could be updated with the click of a button at some point (when new app versions are released)
+* It would be nice if this could be updated with the click of a button at some point (when new app versions are released on GitHub)
 
 * Maybe add spinner to load more, when loading more topics/posts
 
 * Move strings to a resources file
+
+* Admin - Membership sections are under development.
+
+* dmin - Need to add Pages and Modules sections, or decide if they should be created.
