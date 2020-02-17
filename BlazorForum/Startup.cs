@@ -109,6 +109,12 @@ namespace BlazorForum
             {
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
+                endpoints.MapFallbackToAreaPage("/admin/forums", "/_Host", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{id:int}", "/_Host", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{id:int}", "/_Host", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/membership", "/_Host", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/membership/{id}/edit", "/_Host", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/settings", "/_Host", "Admin");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

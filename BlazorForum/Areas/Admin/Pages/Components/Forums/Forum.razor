@@ -1,5 +1,4 @@
 ﻿@page "/admin/forums/{id:int}"
-
 @inject IManageForums manageForums
 @inject IManageForumCategories manageCategories
 
@@ -16,15 +15,27 @@
             <i class="oi oi-folder mr-2"></i>Categories
         </header>
         <ul class="forum-ul">
-            @foreach (var category in categories)
+            @if (categories == null)
             {
-                <li>
-                    <a href="@String.Format("/admin/forums/{0}/categories/{1}",
-                          forum.ForumId, category.ForumCategoryId)">
-                        @category.Title
-                    </a>
-                </li>
+                <li><i class="oi oi-cog se-spin-icon"></i> Loading Categories...</li>
             }
+            else if (categories.Count == 0)
+            {
+                <li>No Categories Found.</li>
+            }
+            else
+            {
+                foreach (var category in categories)
+                {
+                    <li>
+                        <a href="@String.Format("/admin/forums/{0}/categories/{1}",
+                          forum.ForumId, category.ForumCategoryId)">
+                            @category.Title
+                        </a>
+                    </li>
+                }
+            }
+
         </ul>
     </section>
 </section>
