@@ -1,20 +1,31 @@
 ﻿### KNOWN ISSUES ###
-* Issues with admin theme flipping back and forth when pages refresh. The admin index page (Dashboard) doesn't do it.
+
 
 
 ### TODO ###
+
+*** TESTS need written ***
+
 * It would be nice if this could be updated with the click of a button at some point (when new app versions are released on GitHub)
 
 * Maybe add spinner to load more, when loading more topics/posts
 
 * Move strings to a resources file
 
+* Admin - Need to build in restriction to only allow "Administrator" role access to admin area. Some pages may need to allow access for Moderators, etc...
+
 * Admin - Membership sections are under development.
+
+* Membership - Need to be able to assign Roles to user. Also need to build in functionality to Add/Edit/Remove roles.
 
 * Roles - Not really sure what the best approach is for adding Roles ability, so Roles could be assigned to allow Moderators for specific Forums.
 
 * Would be nice if a default user (Administrator) could somehow be installed when someone first builds/runs the application? Or maybe the first registered user is automatically assigned to the Administrator role?
 
-* Admin - Need to add Pages and Modules sections, or decide if they should be created.
+* Admin - Need to add Pages (ability to create pages to be used in the app) and Modules sections (maybe some way to upload "plugin" type features), or decide if they should be created.
 
-*** TESTS need written ***
+* Combine stylesheets (the two admin into one admin, and the two front end into one)
+
+* Minify stylesheets with BuildBundlerMinifier
+
+* Create a delete process for when a user delete's their profile to make sure it deletes all their posts, and any child posts of topics they may have created.

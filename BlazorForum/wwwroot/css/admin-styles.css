@@ -20,6 +20,13 @@
     outline:none;
 }
 
+.content-container{
+    background-color:#555;
+    padding:0.5em;
+    border-bottom-left-radius: 0.25em;
+    border-bottom-right-radius: 0.25em;
+}
+
 .forum-details{
     background-color:#333;
     padding:0.5em;
