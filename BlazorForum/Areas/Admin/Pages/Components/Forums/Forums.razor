@@ -1,5 +1,5 @@
 ﻿@page "/admin/forums"
-
+@*@attribute [Authorize(Roles = "Administrator")]*@
 @inject IManageForums manageForums
 @inject IJSRuntime JSRuntime
 

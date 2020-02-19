@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @* // Need to add roles authorization at some point. *@
-<AuthorizeView>
+<AuthorizeView Roles="Administrator">
     <Authorized>
         <div class="sidebar">
             <BlazorForum.Areas.Admin.Shared.NavMenu />
