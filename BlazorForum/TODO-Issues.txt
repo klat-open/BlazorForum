@@ -1,27 +1,33 @@
-﻿### KNOWN ISSUES ###
+﻿### KNOWN ISSUES ################################################
 
 * The fields aren't validating properly (showing validation errors) when updating user info in the Membership area.
 
-* Admin/Frontend themes still aren't flipping back and forth quite right when you navigate between them. If you refresh it loads fine.
+* Admin/Frontend themes still aren't flipping back and forth quite right when you navigate between them. If 
+	you refresh it loads fine.
 
-### TODO ###
+### TODO #########################################################
 
 *** TESTS need written ***
 
-* It would be nice if this app could be updated with the click of a button at some point (when new app versions are released on GitHub)
-
 * Admin - Membership sections are under development.
 
-* Membership - Need to build in functionality to Remove roles.
+* Membership - Need to build in functionality to Remove role(s).
 
-* Would be nice if a default user (Administrator) could somehow be installed when someone first builds/runs the application? Or maybe the first registered user is automatically assigned to the Administrator role?
+* Would be nice if a default user (Administrator) could somehow be installed when someone first builds/runs the 
+	application? Or maybe the first registered user is automatically assigned to the Administrator role?
 
-* Admin - Perhaps add ability to add Pages (ability to create pages to be used in the app) and Modules sections (maybe some way to upload "plugin" type features), or decide if they should be created.
+* Would like to be able to select a mode in the Admin area that determines if the front end forums will utilize support 
+	forum type features (upvotes, codeblock editor, etc.) or a standard forum.
 
-* Not too important, but combine stylesheets (the two admin into one admin, and the two front end into one)
+* Admin - Perhaps add ability to add Pages (ability to create pages to be used in the app) and Modules sections 
+	(maybe some way to upload "plugin" type features), or decide if they should be created.
 
-* Create a delete process for when a user delete's their profile to make sure it deletes all their posts, and any child posts of topics they may have created.
+* Create a delete process for when a user delete's their profile to make sure it deletes all their posts, and any 
+	child posts of topics they may have created.
 
 * Move strings to a resources file
 
 * Add spinner to load more, when loading more topics/posts
+
+* It would be nice if this app could be updated with the click of a button at some point (when new app versions are 
+	released on GitHub)

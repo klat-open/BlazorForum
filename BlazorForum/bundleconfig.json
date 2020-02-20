@@ -2,15 +2,13 @@
   {
     "outputFileName": "wwwroot/css/blazorforum-styles.min.css",
     "inputFiles": [
-      "wwwroot/css/site.css",
-      "wwwroot/css/site-styles.css"
+      "wwwroot/css/site.css"
     ]
   },
   {
     "outputFileName": "wwwroot/css/blazorforum-adminstyles.min.css",
     "inputFiles": [
-      "wwwroot/css/admin.css",
-      "wwwroot/css/admin-styles.css"
+      "wwwroot/css/admin.css"
     ]
   }
 ]
