@@ -1,0 +1,25 @@
+﻿@inject IBlazorModal BlazorModal
+
+<div class="modal-body">
+    @ModalText
+</div>
+<div class="modal-footer">
+    <button class="mr-2 btn btn-danger" @onclick="ConfirmDelete">Yes</button>
+    <button class="btn btn-secondary" @onclick="CloseParentModal">Cancel</button>
+</div>
+
+@code {
+    [Parameter] public string ModalText { get; set; }
+    [CascadingParameter] BlazorModal blazorModal { get; set; }
+
+    public void CloseParentModal()
+    {
+        blazorModal.CloseModal();
+    }
+
+    public void ConfirmDelete()
+    {
+        //  This needs to send back a response to ForumCategory (admin) to let the component know that
+        //  Yes was clicked
+    }
+}

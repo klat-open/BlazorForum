@@ -1,0 +1,55 @@
+﻿<div class="modal-backdrop fade @(IsVisible ? "d-block show" : "d-none")" @onclick="@CloseModal"></div>
+
+<div class="modal fade @(IsVisible ? "d-block show" : "d-none")" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">@Title</h5>
+                <button type="button" class="close" aria-label="Close" @onclick="@CloseModal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <CascadingValue Value="this">
+                @Content
+            </CascadingValue>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] public IBlazorModal BlazorModalService { get; set; }
+    public string Title { get; set; }
+    public bool IsVisible { get; set; }
+    public RenderFragment Content { get; set; }
+
+    public void Dispose()
+    {
+        BlazorModalService.OnShow -= ShowModal;
+        BlazorModalService.OnClose -= CloseModal;
+    }
+
+    protected override void OnInitialized()
+    {
+        BlazorModalService.OnShow += ShowModal;
+        BlazorModalService.OnClose += CloseModal;
+
+        StateHasChanged();
+    }
+
+    protected void ShowModal(string title, RenderFragment content)
+    {
+        Title = title;
+        IsVisible = true;
+        Content = content;
+
+        StateHasChanged();
+    }
+
+    public void CloseModal()
+    {
+        Title = string.Empty;
+        IsVisible = false;
+        Content = null;
+        StateHasChanged();
+    }
+}

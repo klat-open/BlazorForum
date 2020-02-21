@@ -17,6 +17,7 @@ using BlazorForum.Areas.Identity;
 using BlazorForum.Data;
 using BlazorForum.Models;
 using BlazorForum.Domain.Interfaces;
+using BlazorForum.Pages.Components.BlazorModal;
 
 namespace BlazorForum
 {
@@ -77,6 +78,7 @@ namespace BlazorForum
             services.AddScoped<IManageForumTopics, ManageForumTopics>();
             services.AddScoped<IManageForumPosts, ManageForumPosts>();
             services.AddScoped<IManageThemes, ManageThemes>();
+            services.AddBlazorModal();
 
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();

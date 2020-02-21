@@ -166,6 +166,21 @@ h1, h2, h3 {
     text-overflow: ellipsis;
 }
 
+.modal-content{
+    color:#000;
+    background-color:#dbdbdb;
+}
+
+.modal-footer{
+    border-top:1px solid rgba(0, 0, 0, 0.2);
+}
+
+.modal-header{
+    background-color:#868686;
+    color:#fff;
+    border-bottom-color:rgba(0, 0, 0, 0.2);
+}
+
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
 }

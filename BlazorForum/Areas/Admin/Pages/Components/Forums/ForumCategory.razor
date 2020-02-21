@@ -3,6 +3,7 @@
 @inject IManageForumCategories manageCategories
 @inject IManageForumTopics manageTopics
 @inject UserManager<IdentityUser> userManager
+@inject IBlazorModal blazorModal
 
 <section class="mb-3">
     <a href="@String.Format("/admin/forums/{0}/categories/{1}/edit", forumId, id)"
@@ -32,7 +33,11 @@
                             <div class="list-item-details">
                                 Posted @DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
                                 by @topic.UserName | Flags @topic.Flags
-                                <div>Edit | Delete</div>
+                                <div>
+                                Edit | 
+                                <button class="btn btn-sm btn-blazorforum" @onclick="DeleteClicked">
+                                    Delete
+                                </button></div>
                             </div>
                         </li>
                     }
@@ -61,5 +66,15 @@
             var user = await userManager.FindByIdAsync(topic.UserId);
             topic.UserName = user.UserName;
         }
+    }
+
+    private void DeleteClicked()
+    {
+        blazorModal.Show<ConfirmModal>("Delete Modal", BlazorModalParameter.Get("ModalText", "Are you sure you want to delete this topic and all related posts?"));
+    }
+
+    public void DeleteConfirmed()
+    {
+        // Finish the delete process after response is received to confirm.
     }
 }
