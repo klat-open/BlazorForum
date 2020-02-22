@@ -73,6 +73,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         topic = await manageForumTopics.GetForumTopicAsync(id);
+        if(topic == null)
+            navManager.NavigateTo("/");
+
         posts = await manageForumPosts.GetForumPostsAsync(id);
 
         if (maxCount >= posts.Count)

@@ -34,5 +34,14 @@ namespace BlazorForum.Data.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> DeleteTopicAsync(int id)
+        {
+            var topics = _context.ForumTopics;
+            var topic = await topics.Where(p => p.ForumTopicId == id).FirstOrDefaultAsync();
+            var removed = topics.Remove(topic);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

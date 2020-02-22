@@ -10,6 +10,8 @@ namespace BlazorForum.Pages.Components.BlazorModal
 
         public event Action OnClose;
 
+        public event Action OnConfirmYes;
+
         public void Show<T>(string title, params BlazorModalParameter[] parameters) where T : ComponentBase
         {
             var content = new RenderFragment(x =>
@@ -32,6 +34,11 @@ namespace BlazorForum.Pages.Components.BlazorModal
         public void Close()
         {
             OnClose?.Invoke();
+        }
+
+        public void ConfirmYes()
+        {
+            OnConfirmYes?.Invoke();
         }
     }
 }
