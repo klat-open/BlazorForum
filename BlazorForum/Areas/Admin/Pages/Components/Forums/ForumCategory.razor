@@ -1,5 +1,4 @@
 ﻿@page "/admin/forums/{forumId:int}/categories/{id:int}"
-
 @inject IManageForumCategories manageCategories
 @inject IManageForumTopics manageTopics
 @inject UserManager<IdentityUser> userManager
@@ -11,36 +10,42 @@
 </section>
 <section>
     <header>
-        <h3>@category.Title</h3>
-        <div class="forum-details">@category.Description</div>
+        <h3>@_category.Title</h3>
     </header>
+    <section class="content-container">
+        @_category.Description
+    </section>
 
-    <section>
+    <section class="mt-3">
         <header class="secondary-header">
             <i class="oi oi-comment-square mr-2"></i>Topics
         </header>
         <ul class="forum-ul">
-            @if (topics == null)
+            @if (_topics == null)
             {
                 <li>Loading...</li>
             }
-            @foreach (var topic in topics)
+            else if (_topics.Count == 0)
+            {
+                <li>No topics found.</li>
+            }
+            @foreach (var topic in _topics)
             {
                 <li>
                     @* // TODO - Add Edit/Delete functionality, display post flag count, mark as approved..etc. *@
                     @* //      - Also build topic component *@
-                    <a href="@String.Format("/admin/forums/{0}/categories/{1}/topics/{2}",
-                forumId, id, topic.ForumTopicId)">@topic.Title</a>
+                    @topic.Title
                     <div class="list-item-details">
                         Posted @DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
                         by @topic.UserName | Flags @topic.Flags
                         <div>
-                        <button class="btn btn-sm btn-blazorforum mt-1 mr-2">
-                            Edit
-                        </button>
-                        <button class="btn btn-sm btn-blazorforum mt-1" @onclick="@(() => DeleteClicked(topic.ForumTopicId))">
-                            Delete
-                        </button>
+                            <a href="@String.Format("/admin/forums/{0}/categories/{1}/topics/{2}", forumId, id, topic.ForumTopicId)" 
+                               class="btn btn-sm btn-blazorforum mt-1 mr-2">
+                                Edit
+                            </a>
+                            <button class="btn btn-sm btn-blazorforum mt-1" @onclick="@(() => DeleteClicked(topic.ForumTopicId))">
+                                Delete
+                            </button>
                         </div>
                     </div>
                 </li>
@@ -52,10 +57,9 @@
 @code {
     [Parameter] public int forumId { get; set; }
     [Parameter] public int id { get; set; }
-
-    private Models.ForumCategory category = new Models.ForumCategory();
-    private List<Models.ForumTopic> topics = new List<Models.ForumTopic>();
-    private int ItemIdToDelete = -1;
+    private Models.ForumCategory _category = new Models.ForumCategory();
+    private List<Models.ForumTopic> _topics = new List<Models.ForumTopic>();
+    private int _itemIdToDelete = -1;
 
     public void Dispose()
     {
@@ -64,21 +68,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        category = await manageCategories.GetForumCategoryAsync(id);
-        await LoadTopics();
+        _category = await manageCategories.GetForumCategoryAsync(id);
+        await LoadTopicsAsync();
         blazorModal.OnConfirmYes += YesConfirmed;
     }
 
-    private async Task LoadTopics()
+    private async Task LoadTopicsAsync()
     {
-        topics = await manageTopics.GetForumTopicsAsync(id);
-        topics = topics.OrderByDescending(p => p.PostedDate).ToList();
+        _topics = await manageTopics.GetForumTopicsAsync(id);
+        _topics = _topics.OrderByDescending(p => p.PostedDate).ToList();
         await AddUserToTopic();
     }
 
     private async Task AddUserToTopic()
     {
-        foreach (var topic in topics)
+        foreach (var topic in _topics)
         {
             var user = await userManager.FindByIdAsync(topic.UserId);
             topic.UserName = user.UserName;
@@ -87,18 +91,19 @@
 
     private void DeleteClicked(int id)
     {
-        ItemIdToDelete = id;
+        _itemIdToDelete = id;
         blazorModal.Show<ConfirmModal>("Delete Modal", BlazorModalParameter.Get("ModalText", "Are you sure you want to delete this topic and all related posts?"));
     }
 
     public async void YesConfirmed()
     {
         blazorModal.Close();
-        if(ItemIdToDelete != -1)
+        if(_itemIdToDelete != -1)
         {
-            var deleted = await manageTopics.DeleteForumTopicAsync(ItemIdToDelete);
+            var deleted = await manageTopics.DeleteForumTopicAsync(_itemIdToDelete);
             if (deleted)
-                await LoadTopics();
+                await LoadTopicsAsync();
+            _itemIdToDelete = -1;
             StateHasChanged();
         }
     }

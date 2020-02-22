@@ -180,11 +180,13 @@ app {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-pre{
-    background-color:#eae5f6;
-    border-radius:0.25em;
-    padding:0.5em;
-    border:1px solid #b7aad4;
+pre {
+    background-color: #eae5f6;
+    border-radius: 0.25em;
+    padding: 0.5em;
+    border: 1px solid #b7aad4;
+    tab-size: 4;
+    -moz-tab-size: 4;
 }
 
 .se-spin-icon {

@@ -1,6 +1,6 @@
 ﻿@page "/admin/forums"
 @inject IManageForums manageForums
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime jsRuntime
 
 <header>
     <h3>Forums</h3>
@@ -43,7 +43,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync("setDocTitle", "Forums | Administration");
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("setDocTitle", "Forums | Administration");
+        }
     }
 
     public async void UpdateForums()

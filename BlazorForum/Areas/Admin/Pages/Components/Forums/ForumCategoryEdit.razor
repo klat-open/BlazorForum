@@ -1,27 +1,28 @@
 ﻿@page "/admin/forums/{forumId:int}/categories/{id:int}/edit"
-
 @inject IManageForumCategories manageCategories
 @inject NavigationManager navManager
+@inject IJSRuntime jsRuntime
 
 <h3>Forum Category</h3>
-
-<EditForm Model="@category" OnValidSubmit="UpdateCategory">
-    <DataAnnotationsValidator />
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <label class="input-group-text">Title</label>
+<section class="content-container">
+    <EditForm Model="@category" OnValidSubmit="UpdateCategory">
+        <DataAnnotationsValidator />
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text">Title</label>
+            </div>
+            <InputText id="Title" @bind-Value="category.Title" class="@titleClass" />
         </div>
-        <InputText id="Title" @bind-Value="category.Title" class="@titleClass" />
-    </div>
-    <ValidationMessage For="@(() => category.Title)" />
+        <ValidationMessage For="@(() => category.Title)" />
 
-    <InputTextArea id="Description" @bind-Value="category.Description" rows="3" class="@textAreaClass" />
-    <ValidationMessage For="@(() => category.Description)" />
-    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Update</button>
-    <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
-        <i class="oi oi-cog se-spin-icon"></i> Updating...
-    </div>
-</EditForm>
+        <InputTextArea id="Description" @bind-Value="category.Description" rows="3" class="@textAreaClass" />
+        <ValidationMessage For="@(() => category.Description)" />
+        <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Update</button>
+        <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
+            <i class="oi oi-cog se-spin-icon"></i> Updating...
+        </div>
+    </EditForm>
+</section>
 
 @code {
     [Parameter] public int id { get; set; }
@@ -35,6 +36,14 @@
     protected override async Task OnInitializedAsync()
     {
         category = await manageCategories.GetForumCategoryAsync(id);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("setDocTitle", "Edit Forum Category | Administration");
+        }
     }
 
     private async Task UpdateCategory()

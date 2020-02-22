@@ -29,5 +29,14 @@ namespace BlazorForum.Data.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> DeletePostAsync(int postId)
+        {
+            var posts = _context.ForumPosts;
+            var post = await posts.Where(p => p.ForumPostId == postId).FirstOrDefaultAsync();
+            posts.Remove(post);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

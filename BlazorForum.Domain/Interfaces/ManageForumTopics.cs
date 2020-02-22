@@ -13,6 +13,7 @@ namespace BlazorForum.Domain.Interfaces
         Task<ForumTopic> GetForumTopicAsync(int topicId);
         Task<bool> PostNewTopicAsync(ForumTopic newTopic);
         Task<bool> DeleteForumTopicAsync(int id);
+        Task<bool> UpdateTopicAsync(ForumTopic editedTopic);
     }
 
     public class ManageForumTopics : IManageForumTopics
@@ -35,5 +36,8 @@ namespace BlazorForum.Domain.Interfaces
 
         public async Task<bool> DeleteForumTopicAsync(int id) =>
             await new Data.Repository.ForumTopics(_context).DeleteTopicAsync(id);
+
+        public async Task<bool> UpdateTopicAsync(ForumTopic editedTopic) =>
+            await new Data.Repository.ForumTopics(_context).UpdateTopicAsync(editedTopic);
     }
 }

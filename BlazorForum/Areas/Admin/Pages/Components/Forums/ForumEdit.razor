@@ -1,27 +1,27 @@
 ﻿@page "/admin/forums/{id:int}/edit"
-
 @inject IManageForums manageForums
 @inject NavigationManager navManager
 
 <h3>Forum</h3>
-
-<EditForm Model="@forum" OnValidSubmit="UpdateForum">
-    <DataAnnotationsValidator />
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <label class="input-group-text">Title</label>
+<section class="content-container">
+    <EditForm Model="@forum" OnValidSubmit="UpdateForum">
+        <DataAnnotationsValidator />
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text">Title</label>
+            </div>
+            <InputText id="Title" @bind-Value="forum.Title" class="@titleClass" />
         </div>
-        <InputText id="Title" @bind-Value="forum.Title" class="@titleClass" />
-    </div>
-    <ValidationMessage For="@(() => forum.Title)" />
+        <ValidationMessage For="@(() => forum.Title)" />
 
-    <InputTextArea id="Description" @bind-Value="forum.Description" rows="3" class="@textAreaClass" />
-    <ValidationMessage For="@(() => forum.Description)" />
-    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Update</button>
-    <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
-        <i class="oi oi-cog se-spin-icon"></i> Updating...
-    </div>
-</EditForm>
+        <InputTextArea id="Description" @bind-Value="forum.Description" rows="3" class="@textAreaClass" />
+        <ValidationMessage For="@(() => forum.Description)" />
+        <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Update</button>
+        <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
+            <i class="oi oi-cog se-spin-icon"></i> Updating...
+        </div>
+    </EditForm>
+</section>
 
 @code {
     [Parameter] public int id { get; set; }

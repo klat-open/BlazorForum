@@ -1,0 +1,91 @@
+﻿@page "/admin/forums/{forumId:int}/categories/{categoryId:int}/topics/{topicId:int}/edit"
+@inject IManageForumTopics manageTopics
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+@inject UserManager<IdentityUser> userManager
+@inject AuthenticationStateProvider authStateProvider
+
+<h3>Edit Topic</h3>
+@if (_topic != null)
+{
+    <section class="content-container">
+        <EditForm Model="_topic" OnValidSubmit="UpdateTopicAsync">
+            <DataAnnotationsValidator />
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Title</label>
+                </div>
+                <InputText @bind-Value="_topic.Title" class="form-control"></InputText>
+            </div>
+            <ValidationMessage For="@(() => _topic.Title)" class="text-danger"></ValidationMessage>
+
+            <div class="container-fluid p-0">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="input-group mt-2">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text">Is Approved</label>
+                            </div>
+                            <div class="form-control">
+                                <InputCheckbox @bind-Value="_topic.IsApproved"></InputCheckbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group mt-2">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text">Flags</label>
+                            </div>
+                            <InputNumber @bind-Value="_topic.Flags" class="form-control"></InputNumber>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-2 ckeditor-container">
+                <InputTextArea id="TopicText" @bind-Value="_topic.TopicText" class="form-control"></InputTextArea>
+            </div>
+
+            <ValidationMessage For="@(() => _topic.TopicText)" class="text-danger"></ValidationMessage>
+            <div class="mt-2">
+                <button class="btn btn-blazorforum mr-2" type="submit">Update</button>
+                <a class="btn btn-blazorforum" 
+                   href="@String.Format("/admin/forums/{0}/categories/{1}/topics/{2}", 
+                          forumId, categoryId, topicId)">Cancel</a>
+            </div>
+        </EditForm>
+    </section>
+}
+
+@code {
+    [Parameter] public int forumId { get; set; }
+    [Parameter] public int categoryId { get; set; }
+    [Parameter] public int topicId { get; set; }
+    private Models.ForumTopic _topic = new Models.ForumTopic();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _topic = await manageTopics.GetForumTopicAsync(topicId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "TopicText");
+        }
+    }
+
+    private async void UpdateTopicAsync()
+    {
+        // Should probably eventually validate to make sure topic text isn't empty...but only administrators can edit it at this point.
+        _topic.TopicText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
+        _topic.IsModeratorChanged = true;
+        _topic.EditedDate = DateTime.Now.ToUniversalTime();
+        _topic.EditedBy = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
+
+        var updated = await manageTopics.UpdateTopicAsync(_topic);
+        if (updated)
+            navManager.NavigateTo(String.Format("/admin/forums/{0}/categories/{1}/topics/{2}", forumId, categoryId, topicId));
+    }
+}

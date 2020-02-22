@@ -1,15 +1,19 @@
-﻿### KNOWN ISSUES ################################################
+## KNOWN ISSUES
 
 * The fields aren't validating properly (showing validation errors) when updating user info in the Membership area.
 
 * Admin/Frontend themes still aren't flipping back and forth quite right when you navigate between them. If 
 	you refresh it loads fine.
 
-### TODO #########################################################
+## TODO
 
 *** TESTS need written ***
 
 * Admin - Membership sections are under development.
+
+* Build in ability to ensure topic/posts are approved before displaying them.
+
+* Build in ability to flag posts and decide if flags should be their own db table, to log information like who flagged it, time, etc.
 
 * Would like to be able to select a mode in the Admin area that determines if the front end forums will utilize support 
 	forum type features (upvotes, codeblock editor, etc.) or a standard forum.

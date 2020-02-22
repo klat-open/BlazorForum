@@ -35,5 +35,27 @@
     <script>
         setDocTitle = (title) => { document.title = title; };
     </script>
+    <script src="~/scripts/js/ckeditor.js"></script>
+    <script>
+        var ckeditor = null;
+        window.methods = {
+            loadEditor: function (TextAreaId) {
+                ClassicEditor
+                    .create(document.querySelector('#' + TextAreaId))
+                    .then(editor => {
+                        ckeditor = editor;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            },
+            getEditorText: function () {
+                return ckeditor.getData();
+            },
+            clearEditor: function () {
+                ckeditor.setData('');
+            }
+        }
+    </script>
 </body>
 </html>

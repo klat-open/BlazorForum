@@ -7,7 +7,7 @@ html, body {
 }
 
 a, a:visited, .btn-link {
-    color: #b5b5b5;
+    color: #fff;
 }
 
 a:hover, .btn-link:hover{
@@ -48,7 +48,7 @@ app {
         top: 0.5rem;
     }
 
-.btn-blazorforum {
+.btn-blazorforum, .btn-blazorforum-danger {
     background-color: #252525;
     color: #ddd;
 }
@@ -57,6 +57,10 @@ app {
         background-color: #555;
         color: #fff;
     }
+
+.btn-blazorforum-danger:hover{
+    background-color:#dc3636;
+}
 
 .btn-primary {
     color: #fff;
@@ -68,6 +72,19 @@ app {
     outline: none;
 }
 
+#components-reconnect-modal{
+    color:#000;
+}
+
+#components-reconnect-modal a{
+    color:#444;
+    text-decoration:underline;
+}
+
+#components-reconnect-modal a:hover{
+    color:#8444ed;
+}
+
 .content {
     padding-top: 1.1rem;
 }
@@ -77,6 +94,10 @@ app {
     padding: 0.5em;
     border-bottom-left-radius: 0.25em;
     border-bottom-right-radius: 0.25em;
+}
+
+.ckeditor-container{
+    color:#000;
 }
 
 .forum-details {
@@ -129,11 +150,12 @@ app {
 }
 
 h1, h2, h3 {
-    background-color: #282828;
+    background-color: #252525;
     padding: 0.25em;
     border-top-left-radius: 0.25em;
     border-top-right-radius: 0.25em;
     margin-bottom: 0px;
+    border-bottom: 1px solid #111;
 }
 
 header.header-dark {
@@ -192,6 +214,20 @@ header.header-dark {
 
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+p:last-of-type{
+    margin-bottom:0px;
+}
+
+pre {
+    background-color: #8d8d8d;
+    border-radius: 0.25em;
+    padding: 0.5em;
+    border: 1px solid #393939;
+    margin-top:0.5em;
+    tab-size:4;
+    -moz-tab-size: 4;
 }
 
 .se-spin-icon {

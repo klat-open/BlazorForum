@@ -35,6 +35,25 @@ namespace BlazorForum.Data.Repository
             return true;
         }
 
+        public async Task<bool> UpdateTopicAsync(ForumTopic editedTopic)
+        {
+            var topic = await _context.ForumTopics
+                .Where(p => p.ForumTopicId == editedTopic.ForumTopicId).FirstOrDefaultAsync();
+            if(topic != null)
+            {
+                topic.Title = editedTopic.Title;
+                topic.TopicText = editedTopic.TopicText;
+                topic.IsApproved = editedTopic.IsApproved;
+                topic.Flags = editedTopic.Flags;
+                topic.IsModeratorChanged = editedTopic.IsModeratorChanged;
+                topic.EditedDate = editedTopic.EditedDate;
+                topic.EditedBy = editedTopic.EditedBy;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
         public async Task<bool> DeleteTopicAsync(int id)
         {
             var topics = _context.ForumTopics;

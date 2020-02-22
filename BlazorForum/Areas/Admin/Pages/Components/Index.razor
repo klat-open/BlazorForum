@@ -3,12 +3,17 @@
 @inject IJSRuntime jsRuntime
 
 <h1>Administration</h1>
+<section class="content-container">
+    <p>Welcome to your administration area. The plan is to add general information here about the site, like stats, etc...</p>
+</section>
 
-Welcome to your administration area. The plan is to add general information here about the site, like stats, etc...
 
 @code{
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await jsRuntime.InvokeVoidAsync("setDocTitle", "Dashboard | Administration");
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("setDocTitle", "Dashboard | Administration");
+        }
     }
 }
