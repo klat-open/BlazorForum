@@ -7,7 +7,7 @@
 
 ## TODO
 
-*** TESTS need written ***
+* ** TESTS need written **
 
 * Admin - Membership sections are under development.
 
