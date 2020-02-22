@@ -30,17 +30,18 @@
                     @* //      - Also build topic component *@
                     <a href="@String.Format("/admin/forums/{0}/categories/{1}/topics/{2}",
                             forumId, id, topic.ForumTopicId)">@topic.Title</a>
-                            <div class="list-item-details">
-                                Posted @DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
-                                by @topic.UserName | Flags @topic.Flags
-                                <div>
-                                Edit | 
-                                <button class="btn btn-sm btn-blazorforum" @onclick="DeleteClicked">
-                                    Delete
-                                </button></div>
-                            </div>
-                        </li>
-                    }
+                    <div class="list-item-details">
+                        Posted @DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
+                        by @topic.UserName | Flags @topic.Flags
+                        <div>
+                        Edit | 
+                        <button class="btn btn-sm btn-blazorforum" @onclick="DeleteClicked">
+                            Delete
+                        </button>
+                        </div>
+                    </div>
+                </li>
+            }
         </ul>
     </section>
 </section>

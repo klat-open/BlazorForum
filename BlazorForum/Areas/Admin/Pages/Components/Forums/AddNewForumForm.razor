@@ -1,24 +1,28 @@
 ﻿@inject IManageForums  manageForums
 
-<h5>Create a New Forum</h5>
-
-<EditForm Model="@forum" OnValidSubmit="CreateForum">
-    <DataAnnotationsValidator />
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <label class="input-group-text">Title</label>
+<header class="header-dark">
+    <h5>Create a New Forum</h5>
+</header>
+<section class="content-container">
+    <EditForm Model="@forum" OnValidSubmit="CreateForum">
+        <DataAnnotationsValidator />
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text">Title</label>
+            </div>
+            <InputText id="Title" @bind-Value="forum.Title" class="@titleClass" />
         </div>
-        <InputText id="Title" @bind-Value="forum.Title" class="@titleClass" />
-    </div>
-    <ValidationMessage For="@(() => forum.Title)" />
+        <ValidationMessage For="@(() => forum.Title)" />
 
-    <InputTextArea id="Description" @bind-Value="forum.Description" rows="3" class="@textAreaClass" />
-    <ValidationMessage For="@(() => forum.Description)" />
-    <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Add Forum</button>
-    <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
-        <i class="oi oi-cog se-spin-icon"></i> Adding Forum...
-    </div>
-</EditForm>
+        <InputTextArea id="Description" @bind-Value="forum.Description" rows="3" class="@textAreaClass" />
+        <ValidationMessage For="@(() => forum.Description)" />
+        <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">Add Forum</button>
+        <div class="rounded bg-blazorforumbtn p-2 mt-2 text-light @submitVisibility">
+            <i class="oi oi-cog se-spin-icon"></i> Adding Forum...
+        </div>
+    </EditForm>
+</section>
+
 
 @code {
     [Parameter] public Action OnForumCreated { get; set; }

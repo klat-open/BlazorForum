@@ -108,7 +108,6 @@
 
         foreach (var role in _roles)
         {
-            _options.Add(new SelectListItem("None", null));
             if(await userManager.IsInRoleAsync(_user, role.Name))
                 _options.Add(new SelectListItem(role.Name, role.Id, true));
             else
@@ -128,12 +127,18 @@
         var update = await userManager.UpdateAsync(_user);
         if (update.Succeeded)
         {
-            // May need to list all roles assigned to the user if multiple roles become necessary
-            // Will need to be able to remove roles as well
-            // Need to set things so a user can't edit their own roles
-            var role = _roles.Where(p => p.Id == _selectedItem.Value).FirstOrDefault();
-            if(role != null)
-                await userManager.AddToRoleAsync(_user, role.Name);
+            var currentRoles = await userManager.GetRolesAsync(_user);
+            var selectedRole = _roles.Where(p => p.Id == _selectedItem.Value).FirstOrDefault();
+            var inRole = await userManager.IsInRoleAsync(_user, selectedRole.Name);
+            if(selectedRole != null  && !inRole)
+            {
+                // Remove user from roles before adding them, so they aren't in multiple roles
+                // This may change later if it's determined that users should be in multiple roles.
+                if(currentRoles.Count > 0)
+                    await userManager.RemoveFromRolesAsync(_user, currentRoles);
+
+                await userManager.AddToRoleAsync(_user, selectedRole.Name);
+            }
 
             navManager.NavigateTo("/admin/membership/");
         }

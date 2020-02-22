@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using BlazorForum.Domain.Utilities.Membership;
 
 namespace BlazorForum.Areas.Identity.Pages.Account
 {
@@ -21,18 +22,24 @@ namespace BlazorForum.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
+        private readonly ILogger<Registration> _basicLogger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
+            ILogger<Registration> basicLogger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _signInManager = signInManager;
             _logger = logger;
+            _basicLogger = basicLogger;
             _emailSender = emailSender;
         }
 
@@ -89,6 +96,16 @@ namespace BlazorForum.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    // Need to add method to check 
+                    //  1) If Administrator role exists - add Administrator role or Contributor role if it doesn't
+                    //  2) If user count is 1, assign this new user to the Administrator role, else a general role
+
+                    await new Registration(_userManager, _roleManager, _basicLogger)
+                        .AddDefaultRolesAsync();
+
+                    await new Registration(_userManager, _roleManager, _basicLogger)
+                        .AddDefaultUserRole(user);
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

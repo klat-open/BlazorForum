@@ -11,11 +11,6 @@
 
 * Admin - Membership sections are under development.
 
-* Membership - Need to build in functionality to Remove role(s).
-
-* Would be nice if a default user (Administrator) could somehow be installed when someone first builds/runs the 
-	application? Or maybe the first registered user is automatically assigned to the Administrator role?
-
 * Would like to be able to select a mode in the Admin area that determines if the front end forums will utilize support 
 	forum type features (upvotes, codeblock editor, etc.) or a standard forum.
 
@@ -25,7 +20,7 @@
 * Create a delete process for when a user delete's their profile to make sure it deletes all their posts, and any 
 	child posts of topics they may have created.
 
-* Move strings to a resources file
+* Move strings to a resources file, so it would be easier to eventually build in support for multiple cultures.
 
 * Add spinner to load more, when loading more topics/posts
 
