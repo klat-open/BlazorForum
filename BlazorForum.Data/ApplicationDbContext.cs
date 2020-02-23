@@ -23,5 +23,7 @@ namespace BlazorForum.Data
         public DbSet<Forum> Forums { get; set; }
 
         public DbSet<Theme> Themes { get; set; }
+
+        public DbSet<Configuration> Configuration { get; set; }
     }
 }

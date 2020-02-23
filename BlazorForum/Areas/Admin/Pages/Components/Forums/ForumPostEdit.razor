@@ -1,0 +1,88 @@
+﻿@page "/admin/forums/{forumId:int}/categories/{categoryId:int}/topics/{topicId:int}/posts/{postId:int}/edit"
+@inject IManageForumPosts managePosts
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+@inject UserManager<IdentityUser> userManager
+@inject AuthenticationStateProvider authStateProvider
+
+<h3>Edit Post</h3>
+@if(_forumPost != null)
+{
+    <section class="content-container">
+        <EditForm Model="_forumPost" OnValidSubmit="UpdatePostAsync">
+            <DataAnnotationsValidator />
+            <div class="ckeditor-container">
+                <InputTextArea id="PostText" @bind-Value="_forumPost.PostText" class="form-control"></InputTextArea>
+            </div>
+            <div class="container-fluid p-0">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="input-group mt-2">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text">Is Approved</label>
+                            </div>
+                            <div class="form-control">
+                                <InputCheckbox @bind-Value="_forumPost.IsApproved"></InputCheckbox>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="input-group mt-2">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text">Flags</label>
+                            </div>
+                            <InputNumber @bind-Value="_forumPost.Flags" class="form-control"></InputNumber>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group mt-2">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Edit Reason</label>
+                </div>
+                <InputText @bind-Value="_forumPost.EditReason" class="form-control"></InputText>
+            </div>
+            <ValidationMessage For="@(() => _forumPost.EditReason)" class="text-danger"></ValidationMessage>
+            <div class="mt-2">
+                <button class="btn btn-blazorforum mr-2" type="submit">Update</button>
+                <a class="btn btn-blazorforum"
+                   href="@String.Format("/admin/forums/{0}/categories/{1}/topics/{2}",
+                          forumId, categoryId, topicId)">Cancel</a>
+            </div>
+        </EditForm>
+    </section>
+}
+
+@code {
+    [Parameter] public int forumId { get; set; }
+    [Parameter] public int categoryId { get; set; }
+    [Parameter] public int topicId { get; set; }
+    [Parameter] public int postId { get; set; }
+    private Models.ForumPost _forumPost = new Models.ForumPost();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _forumPost = await managePosts.GetForumPostAsync(postId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "PostText");
+        }
+    }
+
+    private async void UpdatePostAsync()
+    {
+        // Should probably eventually validate to make sure post text isn't empty (CKEditor has a placeholder tag)...but only administrators can edit it at this point.
+        _forumPost.PostText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
+        _forumPost.IsModeratorChanged = true;
+        _forumPost.EditedDate = DateTime.Now.ToUniversalTime();
+        _forumPost.EditedBy = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
+
+        var updated = await managePosts.UpdatePostAsync(_forumPost);
+        if(updated)
+            navManager.NavigateTo(String.Format("/admin/forums/{0}/categories/{1}/topics/{2}", forumId, categoryId, topicId));
+    }
+}

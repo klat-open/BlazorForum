@@ -1,0 +1,86 @@
+﻿@page "/admin/configuration"
+@inject IJSRuntime  jsRuntime
+@inject IManageConfiguration manageConfig
+
+<h3>Site Configuration</h3>
+<section class="content-container">
+    @if (_config != null)
+    {
+        <EditForm Model="_config" OnValidSubmit="UpdateConfigAsync">
+            <DataAnnotationsValidator />
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Google Analytics Tracking ID</label>
+                </div>
+                <InputText @bind-Value="_config.AnalyticsCode" class="form-control"></InputText>
+            </div>
+            <ValidationMessage For="@(() => _config.AnalyticsCode)" class="text-danger" />
+
+            <div class="input-group mt-2">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Email Address</label>
+                </div>
+                <InputText @bind-Value="_config.EmailAddress" class="form-control"></InputText>
+            </div>
+            <ValidationMessage For="@(() => _config.EmailAddress)" class="text-danger" />
+
+            <div class="input-group mt-2">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">SendGrid User</label>
+                </div>
+                <InputText @bind-Value="_config.SendGridUser" class="form-control"></InputText>
+            </div>
+            <ValidationMessage For="@(() => _config.SendGridUser)" class="text-danger" />
+
+            <div class="input-group mt-2">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">SendGrid Key</label>
+                </div>
+                <InputText @bind-Value="_config.SendGridKey" class="form-control"></InputText>
+            </div>
+            <ValidationMessage For="@(() => _config.SendGridKey)" class="text-danger" />
+
+            <div class="p-2 bg-light-gray rounded-top mt-2">Registration Approval Message</div>
+            <div class="ckeditor-container">
+                <InputTextArea id="RegistrationApprovalMessage" @bind-Value="_config.RegistrationApprovalMessage" class="form-control"></InputTextArea>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-blazorforum" type="submit">Update</button>
+                <div class="@_successDisplay ml-2 bg-success rounded p-1">Successfully Updated</div>
+            </div>
+        </EditForm>
+    }
+
+</section>
+
+@code {
+    private Models.Configuration _config;
+    private string _successDisplay = "d-none";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _config = await manageConfig.GetConfigAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "RegistrationApprovalMessage");
+        }
+    }
+
+    private async Task UpdateConfigAsync()
+    {
+        _config.RegistrationApprovalMessage = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
+        var updated = await manageConfig.UpdateConfigAsync(_config);
+        if (updated)
+        {
+            _successDisplay = "d-inline-block";
+            StateHasChanged();
+            await Task.Delay(3000);
+            _successDisplay = "d-none";
+            StateHasChanged();
+        }
+    }
+}

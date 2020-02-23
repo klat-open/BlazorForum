@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20200206004542_test.Designer.cs" />
     <Compile Remove="Migrations\20200215190756_Add Themes Table.cs" />
     <Compile Remove="Migrations\20200215190756_Add Themes Table.Designer.cs" />
+    <Compile Remove="Migrations\20200223012941_Add Configuration Table.cs" />
+    <Compile Remove="Migrations\20200223012941_Add Configuration Table.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

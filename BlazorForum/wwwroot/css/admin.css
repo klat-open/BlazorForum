@@ -25,6 +25,11 @@ app {
     background-color: #333;
 }
 
+.bg-light-gray{
+    background-color:#e9ecef;
+    color:#495057;
+}
+
 .bg-veryDarkBlue {
     background-color: rgb(5, 39, 103);
 }

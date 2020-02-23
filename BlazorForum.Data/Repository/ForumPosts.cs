@@ -22,12 +22,41 @@ namespace BlazorForum.Data.Repository
             return await _context.ForumPosts.Where(p => p.ForumTopicId == topicId).ToListAsync();
         }
 
+        public async Task<List<ForumPost>> GetApprovedForumPostsAsync(int topicId)
+        {
+            return await _context.ForumPosts.Where(p => p.ForumTopicId == topicId && p.IsApproved == true).ToListAsync();
+        }
+
+        public async Task<ForumPost> GetForumPostAsync(int postId)
+        {
+            return await _context.ForumPosts.Where(p => p.ForumPostId == postId).FirstOrDefaultAsync();
+        }
+
         public async Task<bool> AddNewPostAsync(ForumPost newPost)
         {
             var posts = _context.ForumPosts;
             await posts.AddAsync(newPost);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<bool> UpdatePostAsync(ForumPost editedPost)
+        {
+            var post = await _context.ForumPosts
+                .Where(p => p.ForumPostId == editedPost.ForumPostId).FirstOrDefaultAsync();
+            if(post != null)
+            {
+                post.PostText = editedPost.PostText;
+                post.IsApproved = editedPost.IsApproved;
+                post.Flags = editedPost.Flags;
+                post.IsModeratorChanged = editedPost.IsModeratorChanged;
+                post.EditedBy = editedPost.EditedBy;
+                post.EditedDate = editedPost.EditedDate;
+                post.EditReason = editedPost.EditReason;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> DeletePostAsync(int postId)

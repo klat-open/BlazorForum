@@ -1,5 +1,7 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">BlazorForum.Net</a>
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration appConfig
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">@appConfig.GetSection("SiteTitle").Value</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>

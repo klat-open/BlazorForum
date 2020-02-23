@@ -46,7 +46,6 @@
                 <InputTextArea id="TopicText" @bind-Value="_topic.TopicText" class="form-control"></InputTextArea>
             </div>
 
-            <ValidationMessage For="@(() => _topic.TopicText)" class="text-danger"></ValidationMessage>
             <div class="mt-2">
                 <button class="btn btn-blazorforum mr-2" type="submit">Update</button>
                 <a class="btn btn-blazorforum" 
@@ -78,7 +77,7 @@
 
     private async void UpdateTopicAsync()
     {
-        // Should probably eventually validate to make sure topic text isn't empty...but only administrators can edit it at this point.
+        // Should probably eventually validate to make sure topic text isn't empty (CKEditor has a placeholder tag)...but only administrators can edit it at this point.
         _topic.TopicText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
         _topic.IsModeratorChanged = true;
         _topic.EditedDate = DateTime.Now.ToUniversalTime();

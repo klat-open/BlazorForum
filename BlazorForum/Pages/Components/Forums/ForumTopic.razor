@@ -73,10 +73,10 @@ else
     protected override async Task OnInitializedAsync()
     {
         topic = await manageForumTopics.GetForumTopicAsync(id);
-        if(topic == null)
+        if(topic == null || topic.IsApproved != true)
             navManager.NavigateTo("/");
 
-        posts = await manageForumPosts.GetForumPostsAsync(id);
+        posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
 
         if (maxCount >= posts.Count)
             loadMoreVisibility = "d-none";
@@ -93,7 +93,7 @@ else
 
     public async void UpdatePosts()
     {
-        posts = await manageForumPosts.GetForumPostsAsync(id);
+        posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
 
         if (maxCount >= posts.Count)
             loadMoreVisibility = "d-none";
@@ -109,7 +109,7 @@ else
     public async Task LoadMorePosts()
     {
         maxCount += 10;
-        posts = await manageForumPosts.GetForumPostsAsync(id);
+        posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
 
         if (maxCount >= posts.Count)
             loadMoreVisibility = "d-none";

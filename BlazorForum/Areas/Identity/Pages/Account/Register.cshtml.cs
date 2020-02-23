@@ -97,10 +97,6 @@ namespace BlazorForum.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    // Need to add method to check 
-                    //  1) If Administrator role exists - add Administrator role or Contributor role if it doesn't
-                    //  2) If user count is 1, assign this new user to the Administrator role, else a general role
-
                     await new Registration(_userManager, _roleManager, _basicLogger)
                         .AddDefaultRolesAsync();
 
@@ -115,7 +111,9 @@ namespace BlazorForum.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    await _emailSender.SendEmailAsync(
+                        Input.Email, 
+                        "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)

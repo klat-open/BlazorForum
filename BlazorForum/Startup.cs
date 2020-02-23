@@ -18,6 +18,8 @@ using BlazorForum.Data;
 using BlazorForum.Models;
 using BlazorForum.Domain.Interfaces;
 using BlazorForum.Pages.Components.BlazorModal;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using BlazorForum.Domain.Services;
 
 namespace BlazorForum
 {
@@ -37,10 +39,14 @@ namespace BlazorForum
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
                 .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            // Added for sending email through SendGrid
+            services.AddTransient<IEmailSender, EmailSender>();
+
             services.AddRazorPages();
 
             services.Configure<IdentityOptions>(options =>
@@ -59,14 +65,16 @@ namespace BlazorForum
                 options.Lockout.AllowedForNewUsers = true;
 
                 // User settings.
-                options.User.RequireUniqueEmail = false;
+                options.User.RequireUniqueEmail = true;
+
+                options.SignIn.RequireConfirmedAccount = true;
             });
 
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                options.ExpireTimeSpan = TimeSpan.FromDays(5);
 
                 options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
@@ -78,6 +86,7 @@ namespace BlazorForum
             services.AddScoped<IManageForumTopics, ManageForumTopics>();
             services.AddScoped<IManageForumPosts, ManageForumPosts>();
             services.AddScoped<IManageThemes, ManageThemes>();
+            services.AddScoped<IManageConfiguration, ManageConfiguration>();
             services.AddBlazorModal();
 
             services.AddServerSideBlazor();
@@ -111,16 +120,18 @@ namespace BlazorForum
             {
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
-                endpoints.MapFallbackToAreaPage("/admin/forums", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/forums/{id:int}", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/forums/{id:int}/edit", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{id:int}", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{id:int}/edit", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{categoryId:int}/topics/{topicId:int}", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{categoryId:int}/topics/{topicId:int}/edit", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/membership", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/membership/{id}/edit", "/_Host", "Admin");
-                endpoints.MapFallbackToAreaPage("/admin/settings", "/_Host", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{id:int}", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{id:int}/edit", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{id:int}", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{id:int}/edit", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{categoryId:int}/topics/{topicId:int}", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{categoryId:int}/topics/{topicId:int}/edit", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/forums/{forumId:int}/categories/{categoryId:int}/topics/{topicId:int}/posts/{postId:int}/edit", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/membership", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/membership/{id}/edit", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/settings", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/configuration", "/_AdminHost", "Admin");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
