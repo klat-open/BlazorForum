@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using BlazorForum.Domain.Interfaces;
+using System;
 
 namespace BlazorForum.Areas.Identity.Pages.Account
 {
@@ -14,11 +16,13 @@ namespace BlazorForum.Areas.Identity.Pages.Account
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _sender;
+        private readonly IManageConfiguration _config;
 
-        public RegisterConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender sender, IManageConfiguration config)
         {
             _userManager = userManager;
             _sender = sender;
+            _config = config;
         }
 
         public string Email { get; set; }
@@ -41,8 +45,10 @@ namespace BlazorForum.Areas.Identity.Pages.Account
             }
 
             Email = email;
-            // Once you add a real email sender, you should remove this code that lets you confirm the account
-            DisplayConfirmAccountLink = false;
+            // Display the default confirmation link if SendGrid User/Key values aren't entered in site configuration area of admin
+            var configuration = await _config.GetConfigAsync();
+            DisplayConfirmAccountLink = !String.IsNullOrEmpty(configuration.SendGridUser) 
+                && !String.IsNullOrEmpty(configuration.SendGridKey) ? false : true;
             if (DisplayConfirmAccountLink)
             {
                 var userId = await _userManager.GetUserIdAsync(user);

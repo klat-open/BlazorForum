@@ -1,6 +1,4 @@
 ﻿@page "/forum/category/topic/{id:int}/{slug}"
-@using BlazorForum.Pages.Components
-@using BlazorForum.Domain.Utilities.Formatting
 @using Microsoft.AspNetCore.Identity
 
 @inject NavigationManager navManager
@@ -10,7 +8,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime JSRuntime
 
-@if (topic == null)
+@if (_topic == null)
 {
     <div class="mb-2 loading-div">
         <em><i class="oi oi-cog se-spin-icon"></i> Loading</em>
@@ -19,30 +17,83 @@
 else
 {
     <header class="forum-topic-header">
-        <h3>@topic.Title</h3>
+        <h3>@_topic.Title</h3>
     </header>
     <div class="forum-topic-text-div">
-        @((MarkupString)topic.TopicText)
+        <div class="">
+            @if (_isEditorVisible != true)
+                @((MarkupString)_topic.TopicText)
+
+            @if (_topic.UserId == CurrentUserId)
+            {
+                @if (_isEditorVisible)
+                {
+                    <TopicForm OnTopicUpdated="@RefreshTopic" CurrentUserId="@CurrentUserId" ForumTopicToEdit="@_topic" OnCancel="@CancelTopicUpdate"></TopicForm>
+                }
+                else
+                {
+                    <div>
+                        <button class="btn btn-sm btn-blazorforum mb-2" type="button" @onclick="@(() => _isEditorVisible = true)">Edit</button>
+                    </div>
+                }
+            }
+
+            @if (_isEditorVisible != true)
+            {
+                <div class="forum-post-time d-inline-block">
+                    Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(_topic.PostedDate)
+                    by @_topic.UserName
+                </div>
+
+                @if (_topic.EditedDate != null)
+                {
+                    <div class="forum-post-time ml-3 d-inline-block">
+                        Edited @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(Convert.ToDateTime(_topic.EditedDate))
+                    </div>
+                }
+            }
+        </div>
     </div>
 
-    if (posts != null && posts.Count > 0)
+    if (_posts != null && _posts.Count > 0)
     {
-        <ul class="forum-post-ul">
-            @foreach (var post in posts)
+        @* WORKING ON THIS. NEED TO BE ABLE TO ASSIGN VALUE WITHIN THE FOR LOOP WHEN EDIT CLICKED *@
+    <ul class="forum-post-ul">
+        @{
+            _isPostEditorVisible = new string[_posts.Count];
+        }
+
+            @for(var i = 0; i < (_posts.Count - 1); i++)
+        {
+        <li>
+            @if (_isPostEditorVisible[i] != "show")
+                @((MarkupString)_posts[i].PostText)
+
+            @if (_posts[i].UserId == CurrentUserId)
             {
-                <li>
-                    @((MarkupString)post.PostText)
-                    <div class="forum-post-time">
-                        Posted @DateTimeFormatting.RelativeDateAgo(post.PostedDate) 
-                        by @post.UserName
+                if (_isPostEditorVisible[i] == "show")
+                {
+                    <PostForm OnPostUpdated="@UpdatePostsAsync" CurrentUserId="@CurrentUserId" PostToEdit="@_posts[i]" OnCancel="@CancelPostUpdate"></PostForm>
+                }
+                else
+                {
+                    <div>
+                        <button class="btn btn-sm btn-blazorforum mb-2" type="button" @onclick="@(() => _isPostEditorVisible[i] = "show")">Edit</button>
                     </div>
-                </li>
+                }
             }
-        </ul>
+
+            <div class="forum-post-time">
+                Posted @DateTimeFormatting.RelativeDateAgo(_posts[i].PostedDate)
+                by @_posts[i].UserName
+            </div>
+        </li>
+         }
+    </ul>
     }
 
     <div class="text-center">
-        <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMorePosts">Load More</button>
+        <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMorePostsAsync">Load More</button>
     </div>
 }
 
@@ -50,7 +101,7 @@ else
     <h4>Post a Reply</h4>
     <AuthorizeView>
         <Authorized>
-            <AddNewPostForm OnPostAdded="UpdatePosts" TopicId="@id" CurrentUserId="@CurrentUserId"></AddNewPostForm>
+            <PostForm OnPostAdded="UpdatePostsAsync" TopicId="@id" CurrentUserId="@CurrentUserId"></PostForm>
         </Authorized>
         <NotAuthorized>
             <div class="alert alert-secondary">
@@ -65,69 +116,106 @@ else
     [Parameter] public int id { get; set; }
     [Parameter] public string slug { get; set; }
     [Parameter] public string CurrentUserId { get; set; }
-    private Models.ForumTopic topic;
-    private List<Models.ForumPost> posts;
-    private int maxCount = 10;
+    private Models.ForumTopic _topic;
+    private List<Models.ForumPost> _posts;
+    private int _maxCount = 10;
     private string loadMoreVisibility;
+    private bool _isEditorVisible = false;
+    private string[] _isPostEditorVisible;
 
     protected override async Task OnInitializedAsync()
     {
-        topic = await manageForumTopics.GetForumTopicAsync(id);
-        if(topic == null || topic.IsApproved != true)
-            navManager.NavigateTo("/");
+        await LoadTopicAsync();
 
-        posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
+        _posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
 
-        if (maxCount >= posts.Count)
+        if (_maxCount >= _posts.Count)
             loadMoreVisibility = "d-none";
 
-        posts = posts.Take(maxCount).ToList();
+        _posts = _posts.Take(_maxCount).ToList();
         CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
-        await AddUserToPost();
+        await AddUserToPostAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync("setDocTitle", topic.Title);
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("setDocTitle", _topic.Title);
+        }
     }
 
-    public async void UpdatePosts()
+    private async Task LoadTopicAsync()
     {
-        posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
+        _topic = await manageForumTopics.GetForumTopicAsync(id);
+        if(_topic == null || _topic.IsApproved != true)
+            navManager.NavigateTo("/");
 
-        if (maxCount >= posts.Count)
+        var user = await userManager.FindByIdAsync(_topic.UserId);
+        _topic.UserName = user.UserName;
+    }
+
+    public async void UpdatePostsAsync()
+    {
+        _posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
+
+        if (_maxCount >= _posts.Count)
             loadMoreVisibility = "d-none";
         else
             loadMoreVisibility = "d-inline-block";
 
-        posts = posts.Take(maxCount).ToList();
-        
-        await AddUserToPost();
+        _posts = _posts.Take(_maxCount).ToList();
+
+        await AddUserToPostAsync();
         StateHasChanged();
     }
 
-    public async Task LoadMorePosts()
+    public async Task LoadMorePostsAsync()
     {
-        maxCount += 10;
-        posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
+        _maxCount += 10;
+        _posts = await manageForumPosts.GetApprovedForumPostsAsync(id);
 
-        if (maxCount >= posts.Count)
+        if (_maxCount >= _posts.Count)
             loadMoreVisibility = "d-none";
         else
             loadMoreVisibility = "d-inline-block";
 
-        posts = posts.Take(maxCount).ToList();
+        _posts = _posts.Take(_maxCount).ToList();
 
-        await AddUserToPost();
+        await AddUserToPostAsync();
         StateHasChanged();
     }
 
-    private async Task AddUserToPost()
+    private async Task AddUserToPostAsync()
     {
-        foreach (var post in posts)
+        foreach (var post in _posts)
         {
             var user = await userManager.FindByIdAsync(post.UserId);
             post.UserName = user.UserName;
         }
+    }
+
+    private void RefreshTopic()
+    {
+        _isEditorVisible = false;
+        StateHasChanged();
+    }
+
+    private void CancelTopicUpdate()
+    {
+        _isEditorVisible = false;
+        StateHasChanged();
+    }
+
+    private void CancelPostUpdate()
+    {
+        _isPostEditorVisible = null;
+        StateHasChanged();
+    }
+
+    private void ShowPostEditor(int i)
+    {
+        _isPostEditorVisible[i] = "show";
+        StateHasChanged();
     }
 }

@@ -4,7 +4,7 @@
 
 <EditForm EditContext="@_editContext" OnSubmit="AddNewPost">
     <DataAnnotationsValidator />
-    <InputTextArea id="PostText" @bind-Value="forumPost.PostText" />
+    <InputTextArea id="@("PostText-" + forumPost.ForumPostId)" @bind-Value="forumPost.PostText" />
     <ValidationMessage For="@(() => forumPost.PostText)" />
     <button class="btn btn-blazorforum mt-2 @btnVisibility" type="submit">
         @GeneralResources.AddPostBtnText
@@ -17,6 +17,9 @@
 @code {
     [Parameter] public string CurrentUserId { get; set; }
     [Parameter] public Action OnPostAdded { get; set; }
+    [Parameter] public Action OnPostUpdated { get; set; }
+    [Parameter] public Action OnCancel { get; set; }
+    [Parameter] public Models.ForumPost PostToEdit { get; set; }
     [Parameter] public int TopicId { get; set; }
     private EditContext _editContext;
     private Models.ForumPost forumPost = new Models.ForumPost() { UserId = "placeholder" };
@@ -32,13 +35,13 @@
     {
         if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "PostText");
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "PostText-" + forumPost.ForumPostId);
         }
     }
 
     private async Task AddNewPost()
     {
-        forumPost.PostText = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
+        forumPost.PostText = await jsRuntime.InvokeAsync<string>("methods.getTargetedEditorText", "PostText-" + forumPost.ForumPostId);
         var isValid = _editContext.Validate();
         if (isValid)
         {
@@ -61,7 +64,7 @@
             btnVisibility = "d-inline-block";
             submitVisibility = "d-none";
             forumPost.PostText = string.Empty;
-            await jsRuntime.InvokeVoidAsync("methods.clearEditor");
+            await jsRuntime.InvokeVoidAsync("methods.clearTargetedEditor", "PostText-" + forumPost.ForumPostId);
 
             OnPostAdded?.Invoke();
         }

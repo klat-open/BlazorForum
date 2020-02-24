@@ -1,0 +1,134 @@
+﻿@inject IManageForumTopics manageForumTopics
+@inject NavigationManager navManager
+@inject IJSRuntime jsRuntime
+
+    <EditForm EditContext="@_editContext" OnSubmit="PostTopic">
+        <DataAnnotationsValidator />
+        @if (ForumTopicToEdit == null)
+        {
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Title</label>
+                </div>
+                <InputText id="Title" @bind-Value="_forumTopic.Title" class="@_titleClass" />
+            </div>
+            <ValidationMessage For="@(() => _forumTopic.Title)" />
+        }
+        <div class="mt-2">
+            <InputTextArea id="@("TopicText-" + _forumTopic.ForumTopicId)" @bind-Value="_forumTopic.TopicText" rows="3" class="@_textAreaClass" />
+        </div>
+        <ValidationMessage For="@(() => _forumTopic.TopicText)" />
+
+        @if (ForumTopicToEdit != null)
+        {
+            <button id="submitBtn" class="btn btn-blazorforum mt-2" type="submit">Update</button>
+            <button class="btn btn-blazorforum mt-2" type="button" @onclick="@(() => OnCancel())">Cancel</button>
+        }
+        else
+        {
+            <button id="submitBtn" class="btn btn-blazorforum mt-2 @_btnVisibility" type="submit">Post Topic</button>
+            <div class="rounded bg-veryDarkBlue p-2 mt-2 text-light @_submitVisibility"><i class="oi oi-cog se-spin-icon"></i> Posting</div>
+        }
+    </EditForm>
+
+@code {
+    [Parameter] public Action OnTopicAdded { get; set; }
+    [Parameter] public Action OnTopicUpdated { get; set; }
+    [Parameter] public Action OnCancel { get; set; }
+    [Parameter] public int ForumId { get; set; }
+    [Parameter] public string CurrentUserId { get; set; }
+    [Parameter] public Models.ForumTopic ForumTopicToEdit { get; set; }
+    private EditContext _editContext;
+    private Models.ForumTopic _forumTopic = new Models.ForumTopic() { UserId = "placeholder"};
+    private string _btnVisibility = "d-block";
+    private string _submitVisibility = "d-none";
+    private string _titleClass { get; set; } = "form-control";
+    private string _textAreaClass { get; set; } = "mt-2 form-control";
+
+    protected override void OnInitialized()
+    {
+        if (ForumTopicToEdit != null)
+        {
+            _forumTopic = ForumTopicToEdit;
+        }
+        _editContext = new EditContext(_forumTopic);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "TopicText-" + _forumTopic.ForumTopicId);
+        }
+    }
+
+    public async Task PostTopic()
+    {
+        _forumTopic.TopicText = await jsRuntime.InvokeAsync<string>("methods.getTargetedEditorText", "TopicText-" + _forumTopic.ForumTopicId);
+        var isValid = _editContext.Validate();
+        if (isValid)
+        {
+            _btnVisibility = "d-none";
+            _submitVisibility = "d-inline-block";
+
+            if(ForumTopicToEdit != null)
+                await UpdateTopic();
+            else
+            {
+                await AddNewTopic();
+
+                _btnVisibility = "d-inline-block";
+                _submitVisibility = "d-none";
+                _forumTopic.Title = string.Empty;
+                _forumTopic.TopicText = string.Empty;
+                await jsRuntime.InvokeVoidAsync("methods.clearTargetedEditor", "TopicText-" + _forumTopic.ForumTopicId);
+
+                _titleClass = "form-control clear-validation";
+                _textAreaClass = "mt-2 form-control clear-validation";
+                StateHasChanged();
+            }
+        }
+        
+    }
+
+    public async Task AddNewTopic()
+    {
+        var newTopic = new Models.ForumTopic()
+        {
+            Title = _forumTopic.Title,
+            TopicText = _forumTopic.TopicText,
+            UserId = CurrentUserId,
+            PostedDate = DateTime.Now.ToUniversalTime(),
+            ForumCategoryId = ForumId,
+            Flags = 0,
+            IsModeratorChanged = false,
+            IsDeleted = false,
+            IsApproved = true
+        };
+        var posted = await manageForumTopics.PostNewTopicAsync(newTopic);
+
+        OnTopicAdded?.Invoke();
+    }
+
+    public async Task UpdateTopic()
+    {
+        var editedTopic = new Models.ForumTopic
+        {
+            Title = _forumTopic.Title,
+            TopicText = _forumTopic.TopicText,
+            UserId = _forumTopic.UserId,
+            PostedDate = _forumTopic.PostedDate,
+            ForumCategoryId = _forumTopic.ForumCategoryId,
+            Flags = _forumTopic.Flags,
+            IsModeratorChanged = _forumTopic.IsModeratorChanged,
+            IsDeleted = _forumTopic.IsDeleted,
+            IsApproved = _forumTopic.IsApproved,
+            EditedBy = CurrentUserId,
+            EditedDate = DateTime.Now.ToUniversalTime(),
+            ForumTopicId = _forumTopic.ForumTopicId
+        };
+        var updated = await manageForumTopics.UpdateTopicAsync(editedTopic);
+        if (updated)
+            OnTopicUpdated?.Invoke();
+    }
+}

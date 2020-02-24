@@ -9,7 +9,7 @@
     if (@Model.DisplayConfirmAccountLink)
     {
 <p>
-    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
+    This app does not currently have a real email sender registered. Setup a free SendGrid account (up to 100 emails per day) and enter your SendGrid User and Key in the Configuration page of the website admin area. 
     Normally this would be emailed: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
 </p>
     }

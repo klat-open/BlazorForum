@@ -46,8 +46,8 @@
         </main>
     </div>
     <footer class="footer border-top text-muted">
-        <div class="container">
-            &copy; 2020 - BlazorForum - <a asp-area="" asp-page="Privacy">Privacy</a>
+        <div class="container text-center">
+            &copy; @DateTime.Now.Year - @config.GetSection("SiteTitle").Value - Powered By <a href="https://blazorforum.net" target="_blank">BlazorForum</a>
         </div>
     </footer>
     <script src="~/Identity/lib/jquery/dist/jquery.min.js"></script>

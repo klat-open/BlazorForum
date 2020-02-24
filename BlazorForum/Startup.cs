@@ -87,6 +87,7 @@ namespace BlazorForum
             services.AddScoped<IManageForumPosts, ManageForumPosts>();
             services.AddScoped<IManageThemes, ManageThemes>();
             services.AddScoped<IManageConfiguration, ManageConfiguration>();
+            services.AddScoped<IManagePages, ManagePages>();
             services.AddBlazorModal();
 
             services.AddServerSideBlazor();
@@ -132,6 +133,8 @@ namespace BlazorForum
                 endpoints.MapFallbackToAreaPage("/admin/membership/{id}/edit", "/_AdminHost", "Admin");
                 endpoints.MapFallbackToAreaPage("/admin/settings", "/_AdminHost", "Admin");
                 endpoints.MapFallbackToAreaPage("/admin/configuration", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/pages", "/_AdminHost", "Admin");
+                endpoints.MapFallbackToAreaPage("/admin/pages/{pageId:int}/edit", "/_AdminHost", "Admin");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

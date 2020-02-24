@@ -1,0 +1,54 @@
+﻿@page "/admin/pages/{pageId:int}/edit"
+@inject IManagePages managePages
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+
+<h3>Edit Page</h3>
+<section class="content-container">
+    @if(_sitePage != null)
+    {
+        <EditForm Model="_sitePage" OnValidSubmit="UpdatePageAsync">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <label class="input-group-text">Title</label>
+                </div>
+                <InputText @bind-Value="_sitePage.Title" class="form-control"></InputText>
+            </div>
+            <ValidationMessage For="@(() => _sitePage.Title)" class="text-danger" />
+
+            <div class="ckeditor-container mt-2">
+                <InputTextArea id="MainContent" @bind-Value="_sitePage.MainContent"></InputTextArea>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-blazorforum mr-2" type="submit">Update</button>
+                <a class="btn btn-blazorforum" href="/admin/pages">Cancel</a>
+            </div>
+        </EditForm>
+    }
+</section>
+
+@code {
+    [Parameter] public int pageId { get; set; }
+    private SitePage _sitePage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _sitePage = await managePages.GetPageAsync(pageId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadEditor", "MainContent");
+        }
+    }
+
+    private async Task UpdatePageAsync()
+    {
+        _sitePage.MainContent = await jsRuntime.InvokeAsync<string>("methods.getEditorText");
+        var updated = await managePages.UpdatePageAsync(_sitePage);
+        if(updated)
+            navManager.NavigateTo("/admin/pages");
+    }
+}

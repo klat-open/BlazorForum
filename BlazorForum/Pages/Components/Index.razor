@@ -1,14 +1,33 @@
 ﻿@page "/"
 @inject IJSRuntime JSRuntime
+@inject IManagePages managePages
+@inject Microsoft.Extensions.Configuration.IConfiguration config
 
-<h1>BlazorForum</h1>
+@if (_sitePage == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <header>
+        <h1>@_sitePage.Title</h1>
+    </header>
+    <section>
+        @((MarkupString)_sitePage.MainContent)
+    </section>
+}
 
-Welcome to BlazorForum! BlazorForum is an open source forum app built in Blazor. The code can be found on the GitHub repository at <a href="https://github.com/ElliottBrand/BlazorForum" target="_blank">https://github.com/ElliottBrand/BlazorForum</a>.
 
 @code{
+    private Models.SitePage _sitePage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _sitePage = await managePages.GetIndexPageAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Plan to eventually pull this from database
-        await JSRuntime.InvokeVoidAsync("setDocTitle", "BlazorForum.Net");
+        await JSRuntime.InvokeVoidAsync("setDocTitle", config.GetSection("SiteTitle").Value);
     }
 }

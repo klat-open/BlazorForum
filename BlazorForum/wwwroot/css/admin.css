@@ -105,6 +105,14 @@ app {
     color:#000;
 }
 
+    .ckeditor-container a, .ckeditor-container a:visited {
+        color: #2882ff;
+    }
+
+        .ckeditor-container a:hover {
+            color: #64a5ff;
+        }
+
 .forum-details {
     background-color: #333;
     padding: 0.5em;

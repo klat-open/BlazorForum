@@ -19,37 +19,37 @@ else
         <span class="forum-category-description">@category.Description</span>
     </header>
 
-    if (topics == null || topics.Count == 0)
+    <ul class="forum-ul">
+    @if (topics == null || topics.Count == 0)
     {
-        <p>No topics found.</p>
+        <li>No topics found.</li>
     }
     else
     {
-        <ul class="forum-ul">
-            @foreach (var topic in topics)
-            {
-                <li>
-                    <a href="@String.Format("/forum/category/topic/{0}/{1}",
-                          topic.ForumTopicId, UrlFormatting.PrepareUrlText(topic.Title))">
-                        @topic.Title
-                    </a>
-                    <div class="topic-blazifier">
-                        Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
-                        by @topic.UserName
-                    </div>
-                </li>
-            }
-        </ul>
+        @foreach (var topic in topics)
+        {
+            <li>
+                <a href="@String.Format("/forum/category/topic/{0}/{1}",
+                        topic.ForumTopicId, UrlFormatting.PrepareUrlText(topic.Title))">
+                    @topic.Title
+                </a>
+                <div class="topic-blazifier">
+                    Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
+                    by @topic.UserName
+                </div>
+            </li>
+        }
         <div class="text-center">
             <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMoreTopicsAsync">Load More</button>
         </div>
     }
+    </ul>
 
     <section class="mt-4 mb-3">
         <h4>Create a New Topic</h4>
         <AuthorizeView>
             <Authorized>
-                <AddNewTopicForm OnTopicAdded="UpdateTopicsAsync" ForumId="@id" CurrentUserId="@CurrentUserId"></AddNewTopicForm>
+                <TopicForm OnTopicAdded="UpdateTopicsAsync" ForumId="@id" CurrentUserId="@CurrentUserId"></TopicForm>
             </Authorized>
             <NotAuthorized>
                 <div class="alert alert-secondary">

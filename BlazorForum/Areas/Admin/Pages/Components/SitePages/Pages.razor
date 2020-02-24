@@ -1,0 +1,32 @@
+﻿@page "/admin/pages"
+@inject IManagePages managePages
+
+<h3>Pages</h3>
+<section>
+    <ul class="forum-ul">
+        @if (_sitePages == null)
+        {
+            <li>Loading...</li>
+        }
+        else
+        {
+            @foreach (var sitePage in _sitePages)
+            {
+                <li>
+                    <a href="@String.Format("/admin/pages/{0}/edit", sitePage.SitePageId)">
+                        @sitePage.Title
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+</section>
+
+@code {
+    private List<Models.SitePage> _sitePages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _sitePages = await managePages.GetPagesAsync();
+    }
+}
