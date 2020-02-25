@@ -1,5 +1,7 @@
 ﻿@page "/forums"
 @inject IManageForums manageForums
+@inject IManageForumCategories manageCategories
+@inject IManageForumTopics manageTopics
 @inject IJSRuntime JSRuntime
 
 @if (_forums == null)
@@ -32,9 +34,11 @@ else
                 @foreach (var category in forum.ForumCategories)
                 {
                     <li>
-                        <a href="@String.Format("/category/{0}/{1}", 
-                                  category.ForumCategoryId, 
-                                  Domain.Utilities.Formatting.UrlFormatting.PrepareUrlText(category.Title))">@category.Title</a>
+                        <a href="@String.Format("/category/{0}/{1}",
+                                  category.ForumCategoryId,
+                                  UrlFormatting.PrepareUrlText(category.Title))">@category.Title</a> ( 
+                                    @(_topicCountList != null ? _topicCountList.Where(p => p.ParentItemId == category.ForumCategoryId)
+                                    .FirstOrDefault().ChildCount : 0 ) )
                     </li>
                 }
             </ul>
@@ -44,14 +48,33 @@ else
 
 @code {
     private List<Models.Forum> _forums;
+    private List<TopicPostCount> _topicCountList = new List<TopicPostCount>();
 
     protected override async Task OnInitializedAsync()
     {
         _forums = await manageForums.GetForumsAsync();
+
+        await SetTopicsCount();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JSRuntime.InvokeVoidAsync("setDocTitle", "Forums");
+    }
+
+    protected async Task SetTopicsCount()
+    {
+        var categories = await manageCategories.GetForumCategoriesAsync();
+        
+        foreach (var category in categories)
+        {
+            var topics = await manageTopics.GetApprovedForumTopicsAsync(category.ForumCategoryId);
+            var topicCount = new TopicPostCount
+            {
+                ParentItemId = category.ForumCategoryId,
+                ChildCount = topics.Count
+            };
+            _topicCountList.Add(topicCount);
+        }
     }
 }
