@@ -5,11 +5,17 @@
 @if (_forums == null)
 {
     <div class="mb-2 loading-div">
-        <em><i class="oi oi-cog se-spin-icon"></i> Loading</em>
+        <em><i class="oi oi-cog se-spin-icon"></i> @GeneralResources.Loading</em>
     </div>
 }
 else
 {
+    @if(_forums.Count == 0)
+    {
+        <div class="alert alert-secondary">
+            <span class="text-secondary">@GeneralResources.NoForumsFound</span>
+        </div>
+    }
     foreach (var forum in _forums)
     {
         <div class="mb-2">

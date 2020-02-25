@@ -153,6 +153,10 @@
     <value>No Categories Found.</value>
     <comment>Notice when no categories exist within a forum.</comment>
   </data>
+  <data name="NoForumsFound" xml:space="preserve">
+    <value>No Forums Found.</value>
+    <comment>Notice text when no forums are found</comment>
+  </data>
   <data name="NoTopics" xml:space="preserve">
     <value>No Topics Found.</value>
     <comment>Notice text when no topics are found.</comment>

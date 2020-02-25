@@ -6,18 +6,18 @@
     <h3>Forums</h3>
 </header>
 <section>
-    @if (forums == null)
+    @if (_forums == null)
     {
         <div>Loading Forums...</div>
     }
-    else if (forums.Count == 0)
+    else if (_forums.Count == 0)
     {
         <div>No Forums Found.</div>
     }
     else
     {
         <ul class="forum-ul">
-            @foreach (var forum in forums)
+            @foreach (var forum in _forums)
             {
                 <li>
                     <a href="@String.Format("/admin/forums/{0}", forum.ForumId)">
@@ -33,12 +33,11 @@
 </section>
 
 @code {
-    private List<Models.Forum> forums;
-    private List<Models.ForumCategory> categories;
+    private List<Models.Forum> _forums;
 
     protected override async Task OnInitializedAsync()
     {
-        forums = await manageForums.GetForumsAsync();
+        _forums = await manageForums.GetForumsAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -51,7 +50,7 @@
 
     public async void UpdateForums()
     {
-        forums = await manageForums.GetForumsAsync();
+        _forums = await manageForums.GetForumsAsync();
         StateHasChanged();
     }
 }

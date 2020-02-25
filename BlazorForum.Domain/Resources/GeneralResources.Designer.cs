@@ -142,6 +142,15 @@ namespace BlazorForum.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Forums Found..
+        /// </summary>
+        public static string NoForumsFound {
+            get {
+                return ResourceManager.GetString("NoForumsFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Topics Found..
         /// </summary>
         public static string NoTopics {
