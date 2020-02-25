@@ -1,7 +1,5 @@
 ## KNOWN ISSUES
 
-* Can't edit post. Need to get it working within the loop. Editing a topic works fine, since it isn't in a loop.
-
 * The fields aren't validating properly (showing validation errors) when updating user info in the Membership area.
 
 * Admin/Frontend themes still aren't flipping back and forth quite right when you navigate between them. If 
