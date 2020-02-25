@@ -17,6 +17,8 @@ namespace BlazorForum.Domain.Interfaces
     {
         private readonly ApplicationDbContext _context;
 
+        public string ThemeName { get; set; }
+
         public ManageThemes(ApplicationDbContext context)
         {
             _context = context;

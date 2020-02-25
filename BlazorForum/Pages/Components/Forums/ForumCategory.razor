@@ -1,59 +1,62 @@
-﻿@page "/forum/category/{id:int}/{slug}"
+﻿@page "/category/{id:int}/{slug}"
 @inject NavigationManager navManager
-@inject Domain.Interfaces.IManageForumCategories manageForumCategories
-@inject Domain.Interfaces.IManageForumTopics manageForumTopics
+@inject IManageForumCategories manageForumCategories
+@inject IManageForumTopics manageForumTopics
 @inject UserManager<IdentityUser> userManager
 @inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime JSRuntime
 
-@if (category == null)
+@if (_category == null)
 {
     <div class="mb-2 loading-div">
-        <em><i class="oi oi-cog se-spin-icon"></i> Loading</em>
+        <em><i class="oi oi-cog se-spin-icon"></i> @GeneralResources.Loading</em>
     </div>
 }
 else
 {
     <header class="forum-category-header">
-        <h3>@category.Title</h3>
-        <span class="forum-category-description">@category.Description</span>
+        <h3>@_category.Title</h3>
+        <span class="forum-category-description">@_category.Description</span>
     </header>
 
     <ul class="forum-ul">
-    @if (topics == null || topics.Count == 0)
-    {
-        <li>No topics found.</li>
-    }
-    else
-    {
-        @foreach (var topic in topics)
+        @if (_topics == null || _topics.Count == 0)
         {
-            <li>
-                <a href="@String.Format("/forum/category/topic/{0}/{1}",
-                        topic.ForumTopicId, UrlFormatting.PrepareUrlText(topic.Title))">
-                    @topic.Title
-                </a>
-                <div class="topic-blazifier">
-                    Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
-                    by @topic.UserName
-                </div>
-            </li>
+            <li>@GeneralResources.NoTopics</li>
         }
-        <div class="text-center">
-            <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMoreTopicsAsync">Load More</button>
-        </div>
-    }
+        else
+        {
+            @foreach (var topic in _topics)
+            {
+                <li>
+                    <a href="@String.Format("/topic/{0}/{1}",
+                        topic.ForumTopicId, UrlFormatting.PrepareUrlText(topic.Title))">
+                        @topic.Title
+                    </a>
+                    <div class="topic-blazifier">
+                        Posted @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(topic.PostedDate)
+                        by @topic.UserName
+                    </div>
+                </li>
+            }
+        }
     </ul>
 
+    <div class="text-center">
+        <button class="btn btn-blazorforum @_loadMoreVisibility" @onclick="LoadMoreTopicsAsync">
+            @GeneralResources.LoadMore
+        </button>
+    </div>
+
     <section class="mt-4 mb-3">
-        <h4>Create a New Topic</h4>
+        <h4>@GeneralResources.CreateNewTopic</h4>
         <AuthorizeView>
             <Authorized>
                 <TopicForm OnTopicAdded="UpdateTopicsAsync" ForumId="@id" CurrentUserId="@CurrentUserId"></TopicForm>
             </Authorized>
             <NotAuthorized>
                 <div class="alert alert-secondary">
-                    <span class="text-secondary">You must be logged in to post a new topic.</span>
+                    <span class="text-secondary">@GeneralResources.LoginToPostTopic</span>
                 </div>
             </NotAuthorized>
         </AuthorizeView>
@@ -64,40 +67,39 @@ else
     [Parameter] public int id { get; set; }
     [Parameter] public string slug { get; set; }
     [Parameter] public string CurrentUserId { get; set; }
-    private List<Models.ForumCategory> categories;
-    private Models.ForumCategory category;
-    private List<Models.ForumTopic> topics { get; set; }
-    private int maxCount = 10;
-    private string loadMoreVisibility;
+    private Models.ForumCategory _category;
+    private List<Models.ForumTopic> _topics { get; set; }
+    private int _maxCount = 10;
+    private string _loadMoreVisibility;
 
     protected override async Task OnInitializedAsync()
     {
-        category = await manageForumCategories.GetForumCategoryAsync(id);
-        topics = await manageForumTopics.GetApprovedForumTopicsAsync(id);
+        _category = await manageForumCategories.GetForumCategoryAsync(id);
+        _topics = await manageForumTopics.GetApprovedForumTopicsAsync(id);
 
-        if (maxCount >= topics.Count)
-            loadMoreVisibility = "d-none";
+        if (_maxCount >= _topics.Count)
+            _loadMoreVisibility = "d-none";
 
-        topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        _topics = _topics.OrderByDescending(p => p.PostedDate).Take(_maxCount).ToList();
         CurrentUserId = await new Domain.Utilities.Membership.UserInfo(userManager, authStateProvider).GetUserId();
         await AddUserToTopicAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JSRuntime.InvokeVoidAsync("setDocTitle", category.Title);
+        await JSRuntime.InvokeVoidAsync("setDocTitle", _category.Title);
     }
 
     public async void UpdateTopicsAsync()
     {
-        topics = await manageForumTopics.GetApprovedForumTopicsAsync(id);
+        _topics = await manageForumTopics.GetApprovedForumTopicsAsync(id);
 
-        if (maxCount >= topics.Count)
-            loadMoreVisibility = "d-none";
+        if (_maxCount >= _topics.Count)
+            _loadMoreVisibility = "d-none";
         else
-            loadMoreVisibility = "d-inline-block";
+            _loadMoreVisibility = "d-inline-block";
 
-        topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        _topics = _topics.OrderByDescending(p => p.PostedDate).Take(_maxCount).ToList();
 
         await AddUserToTopicAsync();
         StateHasChanged();
@@ -105,15 +107,15 @@ else
 
     public async Task LoadMoreTopicsAsync()
     {
-        maxCount += 10;
-        topics = await manageForumTopics.GetApprovedForumTopicsAsync(id);
+        _maxCount += 10;
+        _topics = await manageForumTopics.GetApprovedForumTopicsAsync(id);
 
-        if (maxCount >= topics.Count)
-            loadMoreVisibility = "d-none";
+        if (_maxCount >= _topics.Count)
+            _loadMoreVisibility = "d-none";
         else
-            loadMoreVisibility = "d-inline-block";
+            _loadMoreVisibility = "d-inline-block";
 
-        topics = topics.OrderByDescending(p => p.PostedDate).Take(maxCount).ToList();
+        _topics = _topics.OrderByDescending(p => p.PostedDate).Take(_maxCount).ToList();
 
         await AddUserToTopicAsync();
         StateHasChanged();
@@ -121,7 +123,7 @@ else
 
     private async Task AddUserToTopicAsync()
     {
-        foreach (var topic in topics)
+        foreach (var topic in _topics)
         {
             var user = await userManager.FindByIdAsync(topic.UserId);
             topic.UserName = user.UserName;

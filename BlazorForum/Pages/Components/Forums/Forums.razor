@@ -1,11 +1,8 @@
 ﻿@page "/forums"
-
-@using Domain.Interfaces;
-
 @inject IManageForums manageForums
 @inject IJSRuntime JSRuntime
 
-@if (forums == null)
+@if (_forums == null)
 {
     <div class="mb-2 loading-div">
         <em><i class="oi oi-cog se-spin-icon"></i> Loading</em>
@@ -13,7 +10,7 @@
 }
 else
 {
-    foreach (var forum in forums)
+    foreach (var forum in _forums)
     {
         <div class="mb-2">
             <header class="forum-header">
@@ -29,7 +26,7 @@ else
                 @foreach (var category in forum.ForumCategories)
                 {
                     <li>
-                        <a href="@String.Format("/forum/category/{0}/{1}", 
+                        <a href="@String.Format("/category/{0}/{1}", 
                                   category.ForumCategoryId, 
                                   Domain.Utilities.Formatting.UrlFormatting.PrepareUrlText(category.Title))">@category.Title</a>
                     </li>
@@ -40,17 +37,15 @@ else
 }
 
 @code {
-    private List<Models.Forum> forums;
-    private List<Models.ForumCategory> categories;
+    private List<Models.Forum> _forums;
 
     protected override async Task OnInitializedAsync()
     {
-        forums = await manageForums.GetForumsAsync();
+        _forums = await manageForums.GetForumsAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Plan to eventually pull this from database
         await JSRuntime.InvokeVoidAsync("setDocTitle", "Forums");
     }
 }

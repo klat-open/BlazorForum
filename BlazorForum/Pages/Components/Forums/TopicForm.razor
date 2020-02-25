@@ -1,6 +1,7 @@
 ﻿@inject IManageForumTopics manageForumTopics
 @inject NavigationManager navManager
 @inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext
 
     <EditForm EditContext="@_editContext" OnSubmit="PostTopic">
         <DataAnnotationsValidator />
@@ -48,9 +49,8 @@
     protected override void OnInitialized()
     {
         if (ForumTopicToEdit != null)
-        {
             _forumTopic = ForumTopicToEdit;
-        }
+
         _editContext = new EditContext(_forumTopic);
     }
 
@@ -62,7 +62,7 @@
         }
     }
 
-    public async Task PostTopic()
+    private async Task PostTopic()
     {
         _forumTopic.TopicText = await jsRuntime.InvokeAsync<string>("methods.getTargetedEditorText", "TopicText-" + _forumTopic.ForumTopicId);
         var isValid = _editContext.Validate();
@@ -91,7 +91,7 @@
         
     }
 
-    public async Task AddNewTopic()
+    private async Task AddNewTopic()
     {
         var newTopic = new Models.ForumTopic()
         {
@@ -103,14 +103,15 @@
             Flags = 0,
             IsModeratorChanged = false,
             IsDeleted = false,
-            IsApproved = true
+            IsApproved = true,
+            UserIP = httpContext.HttpContext.Connection.RemoteIpAddress.ToString()
         };
         var posted = await manageForumTopics.PostNewTopicAsync(newTopic);
 
         OnTopicAdded?.Invoke();
     }
 
-    public async Task UpdateTopic()
+    private async Task UpdateTopic()
     {
         var editedTopic = new Models.ForumTopic
         {

@@ -125,6 +125,26 @@
     <value>Posting...</value>
     <comment>Displays when a post or topic is being posted.</comment>
   </data>
+  <data name="CancelBtnText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Text for a cancel button.</comment>
+  </data>
+  <data name="CreateNewTopic" xml:space="preserve">
+    <value>Create a New Topic</value>
+    <comment>Text displayed when creating a new topic.</comment>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+    <comment>Text for displaying loading status</comment>
+  </data>
+  <data name="LoadMore" xml:space="preserve">
+    <value>Load More</value>
+    <comment>Text for Load More areas</comment>
+  </data>
+  <data name="LoginToPostTopic" xml:space="preserve">
+    <value>You must be logged in to post a new topic.</value>
+    <comment>Notice displayed when a user isn't logged in.</comment>
+  </data>
   <data name="MustLoginToPost" xml:space="preserve">
     <value>You must be logged in to add a new post.</value>
     <comment>General notice displayed on topic when user isn't logged in.</comment>
@@ -132,5 +152,17 @@
   <data name="NoCategories" xml:space="preserve">
     <value>No Categories Found.</value>
     <comment>Notice when no categories exist within a forum.</comment>
+  </data>
+  <data name="NoTopics" xml:space="preserve">
+    <value>No Topics Found.</value>
+    <comment>Notice text when no topics are found.</comment>
+  </data>
+  <data name="PostReply" xml:space="preserve">
+    <value>Post a Reply</value>
+    <comment>Text displayed above editor on topic page.</comment>
+  </data>
+  <data name="UpdateBtnText" xml:space="preserve">
+    <value>Update</value>
+    <comment>Text for an update button.</comment>
   </data>
 </root>

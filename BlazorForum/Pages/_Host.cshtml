@@ -1,11 +1,12 @@
 ﻿@page "/"
 @namespace BlazorForum.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using Domain.Interfaces
 @inject Data.ApplicationDbContext context
+@inject Microsoft.Extensions.Configuration.IConfiguration config
 
 @{
     Layout = null;
+    // This may need to be changed using an await if it starts causing issues with DbContext conflicts
     string themeName = new Domain.Interfaces.ManageThemes(context)
         .GetSelectedThemeNameAsync().Result;
 }
@@ -54,11 +55,9 @@
                     .then(editor => {
                         ckeditor = editor;
 
-                        // Remove editor from array so it can be re-added if multiple edits without page refresh.
-                        if(ckEditor(TextAreaId))
-                            allCkEditors.pop(editor);
-
                         allCkEditors.push(editor);
+                        @*console.log("Added: " + TextAreaId);
+                        //console.log(allCkEditors);*@
                     })
                     .catch(error => {
                         console.error(error);
@@ -75,6 +74,13 @@
             },
             clearTargetedEditor: function (TextAreaId) {
                 ckEditor(TextAreaId).setData('');
+            },
+            removeTargetedEditor: function (TextAreaId) {
+                ckEditor(TextAreaId).destroy();
+                var index = getArrayIndexForKey(allCkEditors, "id", TextAreaId);
+                allCkEditors.splice(index, 1);
+                @*console.log("Removed: " + TextAreaId);
+                //console.log(allCkEditors);*@
             }
         }
 
@@ -84,6 +90,29 @@
             }
             return null;
         }
+
+        function getArrayIndexForKey(arr, key, val) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i][key] == val) return i;
+            }
+            return -1;
+        }
     </script>
+    <environment exclude="Development">
+        @{
+            var googleCode = config.GetSection("GoogleAnalyticsID").Value;
+            if (!String.IsNullOrEmpty(googleCode))
+            {
+                <script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
+                <script>
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag() { dataLayer.push(arguments); }
+                    gtag('js', new Date());
+
+                    gtag('config', @googleCode);
+                </script>
+            }
+        }
+    </environment>
 </body>
 </html>

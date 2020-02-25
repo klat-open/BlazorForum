@@ -1,5 +1,6 @@
-﻿@page "/forum/category/topic/{id:int}/{slug}"
+﻿@page "/topic/{id:int}/{slug}"
 @using Microsoft.AspNetCore.Identity
+@using System.Collections.Generic
 
 @inject NavigationManager navManager
 @inject Domain.Interfaces.IManageForumTopics manageForumTopics
@@ -11,7 +12,7 @@
 @if (_topic == null)
 {
     <div class="mb-2 loading-div">
-        <em><i class="oi oi-cog se-spin-icon"></i> Loading</em>
+        <em><i class="oi oi-cog se-spin-icon"></i> @GeneralResources.Loading</em>
     </div>
 }
 else
@@ -28,7 +29,7 @@ else
             {
                 @if (_isEditorVisible)
                 {
-                    <TopicForm OnTopicUpdated="@RefreshTopic" CurrentUserId="@CurrentUserId" ForumTopicToEdit="@_topic" OnCancel="@CancelTopicUpdate"></TopicForm>
+                    <TopicForm OnTopicUpdated="@RefreshTopic" CurrentUserId="@CurrentUserId" ForumTopicToEdit="@_topic" OnCancel="@RefreshTopic"></TopicForm>
                 }
                 else
                 {
@@ -48,7 +49,7 @@ else
                 @if (_topic.EditedDate != null)
                 {
                     <div class="forum-post-time ml-3 d-inline-block">
-                        Edited @Domain.Utilities.Formatting.DateTimeFormatting.RelativeDateAgo(Convert.ToDateTime(_topic.EditedDate))
+                        Edited @DateTimeFormatting.RelativeDateAgo(Convert.ToDateTime(_topic.EditedDate))
                     </div>
                 }
             }
@@ -57,48 +58,56 @@ else
 
     if (_posts != null && _posts.Count > 0)
     {
-        @* WORKING ON THIS. NEED TO BE ABLE TO ASSIGN VALUE WITHIN THE FOR LOOP WHEN EDIT CLICKED *@
     <ul class="forum-post-ul">
-        @{
-            _isPostEditorVisible = new string[_posts.Count];
-        }
-
-            @for(var i = 0; i < (_posts.Count - 1); i++)
+        @for(var index = 0; index < (_posts.Count); index++)
         {
-        <li>
-            @if (_isPostEditorVisible[i] != "show")
-                @((MarkupString)_posts[i].PostText)
+            var i = index;
+            _isPostEditorVisible.Add(false);
+            <li>
+                @if (_isPostEditorVisible[i] == false)
+                    @((MarkupString)_posts[i].PostText)
 
-            @if (_posts[i].UserId == CurrentUserId)
-            {
-                if (_isPostEditorVisible[i] == "show")
+                @if (_posts[i].UserId == CurrentUserId)
                 {
-                    <PostForm OnPostUpdated="@UpdatePostsAsync" CurrentUserId="@CurrentUserId" PostToEdit="@_posts[i]" OnCancel="@CancelPostUpdate"></PostForm>
+                    if (_isPostEditorVisible[i] == true)
+                    {
+                        <PostForm OnPostUpdated="@(() => RefreshPost(i))" CurrentUserId="@CurrentUserId" PostToEdit="@_posts[i]" OnCancel="@(() => RefreshPost(i))"></PostForm>
+                    }
+                    else
+                    {
+                        <div>
+                            <button class="btn btn-sm btn-blazorforum mb-2" type="button"
+                                    @onclick="@(() => _isPostEditorVisible[i] = true)">
+                                Edit
+                            </button>
+                        </div>
+                    }
                 }
-                else
+                @if (_isPostEditorVisible[i] == false)
                 {
-                    <div>
-                        <button class="btn btn-sm btn-blazorforum mb-2" type="button" @onclick="@(() => _isPostEditorVisible[i] = "show")">Edit</button>
+                    <div class="forum-post-time d-inline-block">
+                        Posted @DateTimeFormatting.RelativeDateAgo(_posts[i].PostedDate)
+                        by @_posts[i].UserName
                     </div>
+                    @if (_posts[i].EditedDate != null)
+                    {
+                        <div class="forum-post-time ml-3 d-inline-block">
+                            Edited @DateTimeFormatting.RelativeDateAgo(Convert.ToDateTime(_posts[i].EditedDate))
+                        </div>
+                    }
                 }
-            }
-
-            <div class="forum-post-time">
-                Posted @DateTimeFormatting.RelativeDateAgo(_posts[i].PostedDate)
-                by @_posts[i].UserName
-            </div>
-        </li>
+            </li>
          }
     </ul>
     }
 
     <div class="text-center">
-        <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMorePostsAsync">Load More</button>
+        <button class="btn btn-blazorforum @loadMoreVisibility" @onclick="LoadMorePostsAsync">@GeneralResources.LoadMore</button>
     </div>
 }
 
 <section class="mt-4 mb-3">
-    <h4>Post a Reply</h4>
+    <h4>@GeneralResources.PostReply</h4>
     <AuthorizeView>
         <Authorized>
             <PostForm OnPostAdded="UpdatePostsAsync" TopicId="@id" CurrentUserId="@CurrentUserId"></PostForm>
@@ -121,7 +130,7 @@ else
     private int _maxCount = 10;
     private string loadMoreVisibility;
     private bool _isEditorVisible = false;
-    private string[] _isPostEditorVisible;
+    private List<bool> _isPostEditorVisible = new List<bool>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -201,21 +210,9 @@ else
         StateHasChanged();
     }
 
-    private void CancelTopicUpdate()
+    private void RefreshPost(int i)
     {
-        _isEditorVisible = false;
-        StateHasChanged();
-    }
-
-    private void CancelPostUpdate()
-    {
-        _isPostEditorVisible = null;
-        StateHasChanged();
-    }
-
-    private void ShowPostEditor(int i)
-    {
-        _isPostEditorVisible[i] = "show";
+        _isPostEditorVisible[i] = false;
         StateHasChanged();
     }
 }

@@ -8,13 +8,6 @@
     {
         <EditForm Model="_config" OnValidSubmit="UpdateConfigAsync">
             <DataAnnotationsValidator />
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <label class="input-group-text">Google Analytics Tracking ID</label>
-                </div>
-                <InputText @bind-Value="_config.AnalyticsCode" class="form-control"></InputText>
-            </div>
-            <ValidationMessage For="@(() => _config.AnalyticsCode)" class="text-danger" />
 
             <div class="input-group mt-2">
                 <div class="input-group-prepend">

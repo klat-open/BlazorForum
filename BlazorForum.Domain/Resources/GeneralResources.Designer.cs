@@ -79,6 +79,51 @@ namespace BlazorForum.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string CancelBtnText {
+            get {
+                return ResourceManager.GetString("CancelBtnText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a New Topic.
+        /// </summary>
+        public static string CreateNewTopic {
+            get {
+                return ResourceManager.GetString("CreateNewTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load More.
+        /// </summary>
+        public static string LoadMore {
+            get {
+                return ResourceManager.GetString("LoadMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must be logged in to post a new topic..
+        /// </summary>
+        public static string LoginToPostTopic {
+            get {
+                return ResourceManager.GetString("LoginToPostTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You must be logged in to add a new post..
         /// </summary>
         public static string MustLoginToPost {
@@ -93,6 +138,33 @@ namespace BlazorForum.Domain.Resources {
         public static string NoCategories {
             get {
                 return ResourceManager.GetString("NoCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Topics Found..
+        /// </summary>
+        public static string NoTopics {
+            get {
+                return ResourceManager.GetString("NoTopics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Post a Reply.
+        /// </summary>
+        public static string PostReply {
+            get {
+                return ResourceManager.GetString("PostReply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        public static string UpdateBtnText {
+            get {
+                return ResourceManager.GetString("UpdateBtnText", resourceCulture);
             }
         }
     }

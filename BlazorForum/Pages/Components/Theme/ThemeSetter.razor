@@ -1,0 +1,15 @@
+﻿@inject IManageThemes themeManager
+
+@{ 
+    // This may need to be changed using an await if it starts causing issues with DbContext conflicts
+    string themeName = ThemeName;
+}
+
+@code {
+    [Parameter] public string ThemeName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ThemeName = await themeManager.GetSelectedThemeNameAsync();
+    }
+}
