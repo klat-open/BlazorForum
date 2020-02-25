@@ -1,18 +1,25 @@
 ﻿@inject IJSRuntime jsRuntime
 @inject NavigationManager navManager
+@inject Microsoft.Extensions.Configuration.IConfiguration config
 @implements IDisposable
 
 @code {
+    private string _googleAnalyticsId;
 
     protected override async Task OnInitializedAsync()
     {
-        navManager.LocationChanged -= OnLocationChanged;
-        navManager.LocationChanged += OnLocationChanged;
+        _googleAnalyticsId = config.GetSection("GoogleAnalyticsID").Value;
 
-        await Task.Delay(1).ContinueWith(async t =>
+        if (!String.IsNullOrEmpty(_googleAnalyticsId))
         {
-            await jsRuntime.InvokeVoidAsync("methods.loadGoogleAnalytics");
-        });
+            navManager.LocationChanged -= OnLocationChanged;
+            navManager.LocationChanged += OnLocationChanged;
+
+            await Task.Delay(1).ContinueWith(async t =>
+            {
+                await jsRuntime.InvokeVoidAsync("methods.loadGoogleAnalytics", navManager.Uri, _googleAnalyticsId);
+            });
+        }
     }
 
     public void Dispose()
@@ -22,9 +29,12 @@
 
     private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
     {
-        await Task.Delay(1).ContinueWith(async t =>
+        if (!String.IsNullOrEmpty(_googleAnalyticsId))
         {
-            await jsRuntime.InvokeVoidAsync("methods.loadGoogleAnalytics", new Uri(args.Location).PathAndQuery);
-        });
+            await Task.Delay(1).ContinueWith(async t =>
+            {
+                await jsRuntime.InvokeVoidAsync("methods.loadGoogleAnalytics", new Uri(args.Location).PathAndQuery, _googleAnalyticsId);
+            });
+        }
     }
 }

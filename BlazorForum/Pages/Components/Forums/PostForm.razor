@@ -2,6 +2,7 @@
 @inject NavigationManager navManager
 @inject IJSRuntime jsRuntime
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext
+@implements IDisposable
 
     <EditForm EditContext="@_editContext" OnSubmit="AddNewPost">
         <DataAnnotationsValidator />
@@ -53,6 +54,11 @@
         {
             await jsRuntime.InvokeVoidAsync("methods.loadEditor", "PostText-" + _forumPost.ForumPostId);
         }
+    }
+
+    public void Dispose()
+    {
+        jsRuntime.InvokeVoidAsync("methods.removeTargetedEditor", "PostText-" + _forumPost.ForumPostId);
     }
 
     private async Task AddNewPost()

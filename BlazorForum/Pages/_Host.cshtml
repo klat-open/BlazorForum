@@ -56,8 +56,8 @@
                         ckeditor = editor;
 
                         allCkEditors.push(editor);
-                        @*console.log("Added: " + TextAreaId);
-                        //console.log(allCkEditors);*@
+                        //console.log("Added: " + TextAreaId);
+                        //console.log(allCkEditors);
                     })
                     .catch(error => {
                         console.error(error);
@@ -76,14 +76,25 @@
                 ckEditor(TextAreaId).setData('');
             },
             removeTargetedEditor: function (TextAreaId) {
-                ckEditor(TextAreaId).destroy();
-                var index = getArrayIndexForKey(allCkEditors, "id", TextAreaId);
-                allCkEditors.splice(index, 1);
-                @*console.log("Removed: " + TextAreaId);
-                //console.log(allCkEditors);*@
+                if (ckEditor(TextAreaId)) {
+                    ckEditor(TextAreaId).destroy();
+                    var index = getArrayIndexForKey(allCkEditors, "id", TextAreaId);
+                    allCkEditors.splice(index, 1);
+                    @*console.log("Removed: " + TextAreaId);
+                    //console.log(allCkEditors);*@
+                }
             },
-            loadGoogleAnalytics: function (pathAndQuery) {
-                CreateAndLoadAnalytics(pathAndQuery);
+            loadGoogleAnalytics: function (pathAndQuery, GoogleAnalyticsID) {
+                var script = document.createElement("script");
+                script.async = true;
+                script.src = "https://www.googletagmanager.com/gtag/js?id=" + GoogleAnalyticsID;
+                document.getElementsByTagName('head')[0].appendChild(script);
+                    
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+
+                gtag('config', GoogleAnalyticsID, { page_path: pathAndQuery });
             }
         }
 
@@ -101,27 +112,6 @@
             return -1;
         }
     </script>
-
-@{
-    var googleCode = config.GetSection("GoogleAnalyticsID").Value;
-    if (!String.IsNullOrEmpty(googleCode))
-    {
-        <script>
-            function CreateAndLoadAnalytics(pathAndQuery) {
-                    var script = document.createElement("script");
-                    script.async = true;
-                    script.src = "https://www.googletagmanager.com/gtag/js?id=@googleCode";
-                    document.getElementsByTagName('head')[0].appendChild(script);
-                    
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag() { dataLayer.push(arguments); }
-                    gtag('js', new Date());
-
-                    gtag('config', '@googleCode', { page_path: pathAndQuery });
-            }
-        </script>
-    }
-}
 
 </body>
 </html>

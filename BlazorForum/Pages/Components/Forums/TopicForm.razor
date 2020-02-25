@@ -2,6 +2,7 @@
 @inject NavigationManager navManager
 @inject IJSRuntime jsRuntime
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext
+@implements IDisposable
 
     <EditForm EditContext="@_editContext" OnSubmit="PostTopic">
         <DataAnnotationsValidator />
@@ -23,7 +24,7 @@
         @if (ForumTopicToEdit != null)
         {
             <button id="submitBtn" class="btn btn-blazorforum mt-2" type="submit">Update</button>
-            <button class="btn btn-blazorforum mt-2" type="button" @onclick="@(() => OnCancel())">Cancel</button>
+            <button class="btn btn-blazorforum mt-2" type="button" @onclick="@(() => CancelUpdate())">Cancel</button>
         }
         else
         {
@@ -62,6 +63,11 @@
         }
     }
 
+    public void Dispose()
+    {
+        jsRuntime.InvokeVoidAsync("methods.removeTargetedEditor", "TopicText-" + _forumTopic.ForumTopicId);
+    }
+
     private async Task PostTopic()
     {
         _forumTopic.TopicText = await jsRuntime.InvokeAsync<string>("methods.getTargetedEditorText", "TopicText-" + _forumTopic.ForumTopicId);
@@ -88,7 +94,7 @@
                 StateHasChanged();
             }
         }
-        
+
     }
 
     private async Task AddNewTopic()
@@ -130,6 +136,15 @@
         };
         var updated = await manageForumTopics.UpdateTopicAsync(editedTopic);
         if (updated)
+        {
+            await jsRuntime.InvokeVoidAsync("methods.removeTargetedEditor", "PostText-" + _forumTopic.ForumTopicId);
             OnTopicUpdated?.Invoke();
+        }
+    }
+
+    private async void CancelUpdate()
+    {
+        await jsRuntime.InvokeVoidAsync("methods.removeTargetedEditor", "PostText-" + _forumTopic.ForumTopicId);
+        OnCancel?.Invoke();
     }
 }
