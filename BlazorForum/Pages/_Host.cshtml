@@ -98,21 +98,31 @@
             return -1;
         }
     </script>
-    <environment exclude="Development">
-        @{
-            var googleCode = config.GetSection("GoogleAnalyticsID").Value;
-            if (!String.IsNullOrEmpty(googleCode))
-            {
-                <script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
-                <script>
+
+@{
+    var googleCode = config.GetSection("GoogleAnalyticsID").Value;
+    if (!String.IsNullOrEmpty(googleCode))
+    {
+        <script>
+            window.methods = {
+                loadGoogleAnalytics: function (pathAndQuery) {
+
+                    var script = document.createElement("script");
+                    script.async = true;
+                    script.src = "https://www.googletagmanager.com/gtag/js?id=@googleCode";
+                    document.getElementsByTagName('head')[0].appendChild(script);
+                    
                     window.dataLayer = window.dataLayer || [];
                     function gtag() { dataLayer.push(arguments); }
                     gtag('js', new Date());
 
-                    gtag('config', '@googleCode');
-                </script>
+                    gtag('config', '@googleCode', { page_path: pathAndQuery });
+                    
+                }
             }
-        }
-    </environment>
+        </script>
+    }
+}
+
 </body>
 </html>

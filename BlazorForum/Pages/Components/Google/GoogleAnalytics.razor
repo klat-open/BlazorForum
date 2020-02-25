@@ -1,0 +1,30 @@
+﻿@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+@implements IDisposable
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        navManager.LocationChanged -= OnLocationChanged;
+        navManager.LocationChanged += OnLocationChanged;
+
+        await Task.Delay(1).ContinueWith(async t =>
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadGoogleAnalytics");
+        });
+    }
+
+    public void Dispose()
+    {
+        navManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        await Task.Delay(1).ContinueWith(async t =>
+        {
+            await jsRuntime.InvokeVoidAsync("methods.loadGoogleAnalytics", new Uri(args.Location).PathAndQuery);
+        });
+    }
+}
