@@ -81,6 +81,9 @@
                 allCkEditors.splice(index, 1);
                 @*console.log("Removed: " + TextAreaId);
                 //console.log(allCkEditors);*@
+            },
+            loadGoogleAnalytics: function (pathAndQuery) {
+                CreateAndLoadAnalytics(pathAndQuery);
             }
         }
 
@@ -104,9 +107,7 @@
     if (!String.IsNullOrEmpty(googleCode))
     {
         <script>
-            window.methods = {
-                loadGoogleAnalytics: function (pathAndQuery) {
-
+            function CreateAndLoadAnalytics(pathAndQuery) {
                     var script = document.createElement("script");
                     script.async = true;
                     script.src = "https://www.googletagmanager.com/gtag/js?id=@googleCode";
@@ -117,8 +118,6 @@
                     gtag('js', new Date());
 
                     gtag('config', '@googleCode', { page_path: pathAndQuery });
-                    
-                }
             }
         </script>
     }
