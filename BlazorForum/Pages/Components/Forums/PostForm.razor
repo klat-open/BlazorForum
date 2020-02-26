@@ -97,7 +97,7 @@
             IsModeratorChanged = false,
             IsDeleted = false,
             IsApproved = true,
-            UserIP = httpContext.HttpContext.Connection.RemoteIpAddress.ToString()
+            //UserIP = httpContext.HttpContext.Connection.RemoteIpAddress.ToString() // Issues with this failing on server
         };
 
         var posted = await manageForumPosts.AddNewPostAsync(newPost);
